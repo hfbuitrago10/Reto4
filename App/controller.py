@@ -1,9 +1,9 @@
 ﻿"""
- * Copyright 2020, Departamento de sistemas y Computación,
+ * Copyright 2021, Departamento de Sistemas y Computación,
  * Universidad de Los Andes
  *
  *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ * Desarrollado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13,26 +13,69 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withthis program. If not, see <http://www.gnu.org/licenses/>.
  """
 
 import config as cf
 import model
 import csv
 
-
 """
-El controlador se encarga de mediar entre la vista y el modelo.
+El controlador se encarga de mediar entre la vista y el modelo
 """
 
-# Inicialización del Catálogo de libros
+# Inicialización del analizador
+
+def initAnalyzer():
+    """
+    Llama la función de inicialización del analizador
+    """
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 # Funciones para la carga de datos
 
-# Funciones de ordenamiento
+def loadData(analyzer):
+    """
+    Carga los datos de los archivos csv en las estructuras
+    de datos
+    """
+    loadLandingPoints(analyzer)
+    loadConnections(analyzer)
+    loadCountries(analyzer)
 
-# Funciones de consulta sobre el catálogo
+def loadLandingPoints(analyzer):
+    """
+    Carga los puntos de conexión del archivo csv. Por cada punto de conexión
+    se indica al modelo que debe adicionarlo al analizador
+    """
+    landingpointsfile = cf.data_dir + 'landing_points.csv'
+    input_file = csv.DictReader(open(landingpointsfile, encoding='utf-8'))
+    for landingpoint in input_file:
+        model.addLandingPoint(analyzer, landingpoint)
+
+def loadConnections(analyzer):
+    """
+    Carga las conexiones del archivo csv. Por cada conexión se indica al
+    modelo que debe adicionarlo al analizador
+    """
+    connectionsfile = cf.data_dir + 'connections.csv'
+    input_file = csv.DictReader(open(connectionsfile, encoding='utf-8'))
+    for connection in input_file:
+        model.addConnection(analyzer, connection)
+
+def loadCountries(analyzer):
+    """
+    Carga los paises del archivo csv. Por cada país se indica al
+    modelo que debe adicionarlo al analizador
+    """
+    countriesfile = cf.data_dir + 'countries.csv'
+    input_file = csv.DictReader(open(countriesfile, encoding='utf-8'))
+    for country in input_file:
+        model.addCountry(analyzer, country)
+
+# Funciones de consulta
