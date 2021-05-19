@@ -1,9 +1,9 @@
 ﻿"""
- * Copyright 2020, Departamento de sistemas y Computación, Universidad
- * de Los Andes
+ * Copyright 2021, Departamento de Sistemas y Computación,
+ * Universidad de Los Andes
  *
  *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ * Desarrollado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13,44 +13,94 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withthis program. If not, see <http://www.gnu.org/licenses/>.
  """
 
 import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
+from DISClib.ADT import orderedmap as om
+from DISClib.DataStructures import mapentry as me
 assert cf
-
 
 """
 La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
 """
+
+# Funciones para la impresión de resultados
+
+# Menú de opciones
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("1- Inicializar analizador")
+    print("2- Cargar información de las conexiones")
+    print("3- Consultar clusters de conexión")
+    print("4- Consultar puntos de conexión críticos")
+    print("5- Consultar ruta mínima entre dos países")
+    print("6- Consultar red de expansión mínima")
+    print("7- Consultar falla en punto de conexión")
+    print("8- Consultar red con máximo ancho de banda")
+    print("9- Consultar ruta mínima entre dos direcciones IP")
+    print("0- Salir")
 
-catalog = None
+# Funciones de inicialización
+
+def initAnalyzer():
+    """
+    Inicializa el analizador de eventos
+    """
+    return controller.initAnalyzer()
+
+def loadData(analyzer):
+    """
+    Carga la información de los eventos al analizador
+    """
+    return controller.loadData(analyzer)
+
+analyzer = None
 
 """
-Menu principal
+Menú principal
 """
 while True:
     printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
+    inputs = input("Seleccione una opción para continuar\n")
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print()
+        print("Inicializando....\n")
+        analyzer = initAnalyzer()
 
     elif int(inputs[0]) == 2:
+        print()
+        print("Cargando información de las conexiones....")
+        data = loadData(analyzer)
+    
+    elif int(inputs[0]) == 3:
+        pass
+
+    elif int(inputs[0]) == 4:
+        pass
+
+    elif int(inputs[0]) == 5:
+        pass
+
+    elif int(inputs[0]) == 6:
+        pass
+
+    elif int(inputs[0]) == 7:
+        pass
+
+    elif int(inputs[0]) == 8:
+        pass
+
+    elif int(inputs[0]) == 9:
         pass
 
     else:
