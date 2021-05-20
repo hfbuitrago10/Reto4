@@ -43,7 +43,8 @@ def newAnalyzer():
     analyzer = {'landingpoints': None,
                 'connections': None,
                 'cables': None,
-                'countries': None}
+                'countries': None,
+                'landingpointsinfo': None}
     
     """
     Se crea un map para guardar los puntos de conexión
@@ -64,6 +65,12 @@ def newAnalyzer():
     Se crea un map para guardar la información de los países
     """
     analyzer['countries'] = mp.newMap(maptype='PROBING')
+
+    """
+    Se crea un map para guardar la información espacial de los puntos
+    de conexión
+    """
+    analyzer['landingpointsinfo'] = mp.newMap(maptype='PROBING')
 
     return analyzer
 
@@ -157,6 +164,14 @@ def addCountry(analyzer, country):
     key = country['CountryName']
     key = key.replace(' ', '')
     mp.put(analyzer['countries'], key, country)
+
+def addLandingPointsInfo(analyzer, landingpoint):
+    """
+    Adiciona la información de un punto de conexión específico al
+    map de puntos de conexión
+    """
+    key = landingpoint['landing_point_id']
+    mp.put(analyzer['landingpointsinfo'], key, landingpoint)
 
 # Funciones para creación de datos
 
