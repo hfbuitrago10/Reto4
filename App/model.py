@@ -41,7 +41,9 @@ def newAnalyzer():
     Inicializa el analizador de conexiones
     """
     analyzer = {'landingpoints': None,
-                'connections': None}
+                'connections': None,
+                'cables': None,
+                'countries': None}
     
     """
     Se crea un map para guardar los puntos de conexión
@@ -53,16 +55,36 @@ def newAnalyzer():
     """
     analyzer['connections'] = gr.newGraph('ADJ_LIST')
 
+    """
+    Se crea un map para guardar la información de los cables
+    """
+    analyzer['cables'] = mp.newMap(maptype='PROBING')
+
+    """
+    Se crea un map para guardar la información de los países
+    """
+    analyzer['countries'] = mp.newMap(maptype='PROBING')
+
     return analyzer
 
 # Funciones para agregar información al analizador
 
-def addLandingPointConnection(analyzer, landingpoint, connection):
+def addLandingPointConnection(analyzer, connection):
     """
     Adiciona los puntos de conexión como vértices del grafo y las
     conexiones entre véritices adyacentes como arcos
     """
-    pass
+    origin = vertexStructureOrigin(connection)
+    destination = vertexStructureDestination(connection)
+    distance = getDistance(connection)
+    capacity = getCapacity(connection)
+    weight = distance, capacity
+    addLandingPoint(analyzer, origin)
+    addLandingPoint(analyzer, destination)
+    addConnection(analyzer, origin, destination, weight)
+    addLandingPoints(analyzer, connection, '\ufefforigin')
+    addLandingPoints(analyzer, connection, 'destination')
+    addCableInfo(analyzer, connection)
 
 def addLandingPoint(analyzer, landingpoint):
     """
@@ -81,16 +103,115 @@ def addConnection(analyzer, origin, destination, weight):
         gr.addEdge(analyzer['connections'], origin, destination, weight)
     return analyzer
 
+def addLandingPoints(analyzer, connection, landingpoint):
+    """
+    Adiciona a un punto de conexión sus respectivos cables
+    """
+    entry = mp.get(analyzer['landingpoints'], connection[landingpoint])
+    if entry is None:
+        lstlandingpoints = lt.newList('ARRAY_LIST')
+        lt.addLast(lstlandingpoints, connection['cable_id'])
+        mp.put(analyzer['landingpoints'], connection[landingpoint], lstlandingpoints)
+    else:
+        lstlandingpoints = entry['value']
+        cable = connection['cable_id']
+        if not lt.isPresent(lstlandingpoints, cable):
+            lt.addLast(lstlandingpoints, cable)
+    return analyzer
+
+def addLocalConnections(analyzer):
+    """
+    Adiciona un arco entre los vértices de cada punto de conexión
+    """
+    lstlandingpoints = mp.keySet(analyzer['landingpoints'])
+    for landingpoint in lt.iterator(lstlandingpoints):
+        lstconnections = mp.get(analyzer['landingpoints'], landingpoint)['value']
+        precable = None
+        for cable in lt.iterator(lstconnections):
+            connection = landingpoint + '-' + cable
+            if precable is not None:
+                addConnection(analyzer, precable, connection, addWeight(analyzer, landingpoint))
+                addConnection(analyzer, connection, precable, addWeight(analyzer, landingpoint))
+            precable = connection
+
+def addCableInfo(analyzer, connection):
+    """
+    Adiciona el ancho de banda en tbps de un cable específico
+    al map de cables
+    """
+    cables = analyzer['cables']
+    cable = connection['cable_id']
+    existcable = mp.contains(cables, cable)
+    if existcable:
+        entry = mp.get(cables, cable)
+        value = me.getValue(entry)
+    else:
+        value = connection['capacityTBPS']
+        mp.put(cables, cable, value)
+
+def addCountry(analyzer, country):
+    """
+    Adiciona la información de un país específico al map de
+    paises
+    """
+    key = country['CountryName']
+    key = key.replace(' ', '')
+    mp.put(analyzer['countries'], key, country)
+
 # Funciones para creación de datos
 
-def vertexStructure(landingpoint, connection):
+def vertexStructureOrigin(connection):
     """
     Crea la estructura del vértice con el id del punto de
     conexión y el id del cable de conexión
     """
-    vertex = landingpoint['landing_point_id'] + '-'
+    vertex = connection['\ufefforigin'] + '-'
     vertex = vertex  + connection['cable_id']
     return vertex
+
+def vertexStructureDestination(connection):
+    """
+    Crea la estructura del vértice con el id del punto de
+    conexión y el id del cable de conexión
+    """
+    vertex = connection['destination'] + '-'
+    vertex = vertex  + connection['cable_id']
+    return vertex
+
+def getDistance(connection):
+    """
+    Retorna la distancia en km de un cable específico
+    """
+    distance = connection['cable_length']
+    if distance == 'n.a.':
+        distance = 0
+    else:
+        distance = distance.replace(' km', '')
+        distance = distance.replace(',', '')
+    return float(distance)
+
+def getCapacity(connection):
+    """
+    Retorna el ancho de banda en tbps de un cable
+    específico
+    """
+    capacity = connection['capacityTBPS']
+    return float(capacity)
+
+def addWeight(analyzer, landingpoint):
+    """
+    Retorna una tupla con la distancia en km y el ancho de banda
+    mínimo en tbps como peso del arco entre dos vértices
+    de un punto de conexión
+    """
+    distance = 0.10
+    lstcapacity = []
+    lstcables = mp.get(analyzer['landingpoints'], landingpoint)['value']
+    for cable in lt.iterator(lstcables):
+        capacity = mp.get(analyzer['cables'], cable)['value']
+        lstcapacity.append(float(capacity))
+    mincapacity = min(lstcapacity)
+    return distance, mincapacity
 
 # Funciones de consulta
 
