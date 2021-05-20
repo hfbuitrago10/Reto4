@@ -44,6 +44,7 @@ def loadData(analyzer):
     Carga los datos de los archivos csv en las estructuras
     de datos
     """
+    loadLandingPoints(analyzer)
     loadConnections(analyzer)
     loadCountries(analyzer)
 
@@ -55,7 +56,7 @@ def loadLandingPoints(analyzer):
     landingpointsfile = cf.data_dir + 'landing_points.csv'
     input_file = csv.DictReader(open(landingpointsfile, encoding='utf-8'))
     for landingpoint in input_file:
-        model.addLandingPoints(analyzer, landingpoint)
+        model.addLandingPointsInfo(analyzer, landingpoint)
 
 def loadConnections(analyzer):
     """
