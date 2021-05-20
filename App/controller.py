@@ -80,3 +80,24 @@ def loadCountries(analyzer):
         model.addCountry(analyzer, country)
 
 # Funciones de consulta
+
+def landingPointsSize(analyzer):
+    """
+    Retorna el número de puntos de conexión del
+    grafo
+    """
+    return model.landingPointsSize(analyzer)
+
+def connectionsSize(analyzer):
+    """
+    Retorna el número de conexiones entre los puntos
+    de vértices del grafo
+    """
+    return model.connectionsSize(analyzer)
+
+def countriesSize(analyzer):
+    """
+    Retorna el número de países cargados en el
+    analizador
+    """
+    return model.countriesSize(analyzer)
