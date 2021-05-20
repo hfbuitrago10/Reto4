@@ -27,7 +27,10 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import graph as gr
 assert cf
+
+sys.setrecursionlimit(10000*100)
 
 """
 La vista se encarga de la interacción con el usuario
@@ -79,7 +82,7 @@ while True:
 
     elif int(inputs[0]) == 2:
         print()
-        print("Cargando información de las conexiones....")
+        print("Cargando información de las conexiones....\n")
         data = loadData(analyzer)
     
     elif int(inputs[0]) == 3:
