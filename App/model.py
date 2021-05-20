@@ -167,8 +167,8 @@ def addCountry(analyzer, country):
 
 def addLandingPointsInfo(analyzer, landingpoint):
     """
-    Adiciona la información de un punto de conexión específico al
-    map de puntos de conexión
+    Adiciona la información espacial de un punto de conexión específico
+    al map de puntos de conexión
     """
     key = landingpoint['landing_point_id']
     mp.put(analyzer['landingpointsinfo'], key, landingpoint)
