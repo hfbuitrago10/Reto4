@@ -215,4 +215,23 @@ def addWeight(analyzer, landingpoint):
 
 # Funciones de consulta
 
-# Funciones de comparación
+def landingPointsSize(analyzer):
+    """
+    Retorna el número de puntos de conexión del
+    grafo
+    """
+    return mp.size(analyzer['landingpoints'])
+
+def connectionsSize(analyzer):
+    """
+    Retorna el número de conexiones entre los puntos
+    de vértices del grafo
+    """
+    return gr.numEdges(analyzer['connections'])
+
+def countriesSize(analyzer):
+    """
+    Retorna el número de países cargados en el
+    analizador
+    """
+    return mp.size(analyzer['countries'])
