@@ -32,7 +32,8 @@ El controlador se encarga de mediar entre la vista y el modelo
 
 def initAnalyzer():
     """
-    Llama la función de inicialización del analizador
+    Llama la función de inicialización del analizador de
+    conexiones
     """
     analyzer = model.newAnalyzer()
     return analyzer
@@ -50,21 +51,23 @@ def loadData(analyzer):
 
 def loadLandingPoints(analyzer):
     """
-    Carga los puntos de conexión del archivo csv. Por cada punto de conexión
-    se indica al modelo que debe adicionarlo al analizador
+    Carga las coordenadas geográficas de los puntos de conexión. Por cada
+    punto de conexión se indica al modelo que debe adicionar sus
+    coordenadas al analizador
     """
     landingpointsfile = cf.data_dir + 'landing_points.csv'
-    input_file = csv.DictReader(open(landingpointsfile, encoding='utf-8'))
+    input_file = csv.DictReader(open(landingpointsfile, encoding='utf-8-sig'))
     for landingpoint in input_file:
-        model.addLandingPointsInfo(analyzer, landingpoint)
+        model.addLandingPointsCoords(analyzer, landingpoint)
 
 def loadConnections(analyzer):
     """
-    Carga las conexiones del archivo csv. Por cada conexión se indica al
-    modelo que debe adicionarlo al analizador
+    Carga las conexiones entre los vértices de los puntos de conexión. Por
+    cada punto de conexión se indica al modelo que adicione sus vértices
+    y conexiones al analizador
     """
     connectionsfile = cf.data_dir + 'connections.csv'
-    input_file = csv.DictReader(open(connectionsfile, encoding='utf-8'))
+    input_file = csv.DictReader(open(connectionsfile, encoding='utf-8-sig'))
     for connection in input_file:
         model.addLandingPointConnection(analyzer, connection)
     model.addLocalConnections(analyzer)
@@ -72,33 +75,14 @@ def loadConnections(analyzer):
 
 def loadCountries(analyzer):
     """
-    Carga los paises del archivo csv. Por cada país se indica al
-    modelo que debe adicionarlo al analizador
+    Carga los puntos de conexión de las capitales de cada país. Por cada
+    país se indica al modelo que debe adicione los respectivos vértices
+    y conexiones al analizador
     """
     countriesfile = cf.data_dir + 'countries.csv'
     input_file = csv.DictReader(open(countriesfile, encoding='utf-8'))
     for country in input_file:
-        model.addCountry(analyzer, country)
+        model.addLandingPointsByCountry(analyzer, country)
+        model.addCapitalLandingPoints(analyzer, country)
 
 # Funciones de consulta
-
-def landingPointsSize(analyzer):
-    """
-    Retorna el número de puntos de conexión del
-    grafo
-    """
-    return model.landingPointsSize(analyzer)
-
-def connectionsSize(analyzer):
-    """
-    Retorna el número de conexiones entre los puntos
-    de vértices del grafo
-    """
-    return model.connectionsSize(analyzer)
-
-def countriesSize(analyzer):
-    """
-    Retorna el número de países cargados en el
-    analizador
-    """
-    return model.countriesSize(analyzer)
