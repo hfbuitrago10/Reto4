@@ -21,6 +21,7 @@
  """
 
 import config as cf
+import haversine as hs
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
@@ -28,49 +29,32 @@ from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim as pm
+from DISClib.Algorithms.Graphs import bellmanford as bf
 assert cf
 
 """
 Se define la estructura del analizador de conexiones
 """
 
-# Construcción de modelo
+# Construcción del modelo
 
 def newAnalyzer():
     """
     Inicializa el analizador de conexiones
     """
-    analyzer = {'landingpoints': None,
-                'connections': None,
-                'cables': None,
-                'countries': None,
-                'landingpointsinfo': None}
+    analyzer = {'connections': None,
+                'cablesbylandingpoint': None,
+                'landingpointscoords': None,
+                'landingpointsbycountry': None}
     
-    """
-    Se crea un map para guardar los puntos de conexión
-    """
-    analyzer['landingpoints'] = mp.newMap(maptype='PROBING')
-
-    """
-    Se crea un grafo para modelar las conexiones entre puntos
-    """
-    analyzer['connections'] = gr.newGraph('ADJ_LIST')
-
-    """
-    Se crea un map para guardar la información de los cables
-    """
-    analyzer['cables'] = mp.newMap(maptype='PROBING')
-
-    """
-    Se crea un map para guardar la información de los países
-    """
-    analyzer['countries'] = mp.newMap(maptype='PROBING')
-
-    """
-    Se crea un map para guardar la información espacial de los puntos
-    de conexión
-    """
-    analyzer['landingpointsinfo'] = mp.newMap(maptype='PROBING')
+    analyzer['connections'] = gr.newGraph('ADJ_LIST',
+                                           True,
+                                           100000)
+    
+    analyzer['cablesbylandingpoint'] = mp.newMap()
+    analyzer['landingpointscoords'] = mp.newMap()
+    analyzer['landingpointsbycountry'] = mp.newMap()
 
     return analyzer
 
@@ -78,175 +62,170 @@ def newAnalyzer():
 
 def addLandingPointConnection(analyzer, connection):
     """
-    Adiciona los puntos de conexión como vértices del grafo y las
-    conexiones entre véritices adyacentes como arcos
+    Adiciona los puntos de conexión como vértices del grafo, además
+    crea un arco entre cada vértice adyacente con su distancia
+    en kilometros como peso
     """
-    origin = vertexStructureOrigin(connection)
-    destination = vertexStructureDestination(connection)
-    distance = getDistance(connection)
-    capacity = getCapacity(connection)
-    weight = distance, capacity
+    origin = vertexOrigin(connection)
+    destination = vertexDestination(connection)
+    distance = haversineDistance(analyzer, connection)
     addLandingPoint(analyzer, origin)
     addLandingPoint(analyzer, destination)
-    addConnection(analyzer, origin, destination, weight)
-    addLandingPoints(analyzer, connection, '\ufefforigin')
-    addLandingPoints(analyzer, connection, 'destination')
-    addCableInfo(analyzer, connection)
+    addConnection(analyzer, origin, destination, distance)
+    addConnection(analyzer, destination, origin, distance)
+    addCablesByLandingPoint(analyzer, connection, 'origin')
+    addCablesByLandingPoint(analyzer, connection, 'destination')
 
 def addLandingPoint(analyzer, landingpoint):
     """
-    Adiciona un punto de conexión como vértice del grafo
+    Adiciona un punto de conexión como vértice al grafo
     """
-    if not gr.containsVertex(analyzer['connections'], landingpoint):
-        gr.insertVertex(analyzer['connections'], landingpoint)
+    graph = analyzer['connections']
+    if not gr.containsVertex(graph, landingpoint):
+        gr.insertVertex(graph, landingpoint)
     return analyzer
 
 def addConnection(analyzer, origin, destination, weight):
     """
-    Adiciona un arco entre dos puntos de conexión
+    Adiciona un arco entre dos vértices del grafo
     """
-    edge = gr.getEdge(analyzer['connections'], origin, destination)
+    graph = analyzer['connections']
+    edge = gr.getEdge(graph, origin, destination)
     if edge is None:
-        gr.addEdge(analyzer['connections'], origin, destination, weight)
+        gr.addEdge(graph, origin, destination, weight)
     return analyzer
 
-def addLandingPoints(analyzer, connection, landingpoint):
+def addCablesByLandingPoint(analyzer, connection, landingpoint):
     """
-    Adiciona a un punto de conexión sus respectivos cables
+    Adiciona un cable a la lista de cables de un punto de
+    conexión específico
     """
-    entry = mp.get(analyzer['landingpoints'], connection[landingpoint])
+    map = analyzer['cablesbylandingpoint']
+    entry = mp.get(map, connection[landingpoint])
     if entry is None:
-        lstlandingpoints = lt.newList('ARRAY_LIST')
-        lt.addLast(lstlandingpoints, connection['cable_id'])
-        mp.put(analyzer['landingpoints'], connection[landingpoint], lstlandingpoints)
+        lstcables = lt.newList('ARRAY_LIST')
+        lt.addLast(lstcables, connection['cable_id'])
+        mp.put(map, connection[landingpoint], lstcables)
     else:
-        lstlandingpoints = entry['value']
-        cable = connection['cable_id']
-        if not lt.isPresent(lstlandingpoints, cable):
-            lt.addLast(lstlandingpoints, cable)
+        lstcables = entry['value']
+        if not lt.isPresent(lstcables, connection['cable_id']):
+            lt.addLast(lstcables, connection['cable_id'])
     return analyzer
+
+def addLandingPointsCoords(analyzer, landingpoint):
+    """
+    Adiciona las coordenadas geográficas de un punto de
+    conexión específico
+    """
+    map = analyzer['landingpointscoords']
+    key = landingpoint['landing_point_id']
+    latitude = float(landingpoint['latitude'])
+    longitude = float(landingpoint['longitude'])
+    name = str(landingpoint['name'])
+    mp.put(map, key, (latitude, longitude, name))
 
 def addLocalConnections(analyzer):
     """
-    Adiciona un arco entre los vértices de cada punto de conexión
+    Adiciona un arco entre cada vértice de un punto de conexión
+    específico
     """
-    lstlandingpoints = mp.keySet(analyzer['landingpoints'])
+    map = analyzer['cablesbylandingpoint']
+    lstlandingpoints = mp.keySet(map)
     for landingpoint in lt.iterator(lstlandingpoints):
-        lstconnections = mp.get(analyzer['landingpoints'], landingpoint)['value']
-        precable = None
-        for cable in lt.iterator(lstconnections):
-            connection = landingpoint + '-' + cable
-            if precable is not None:
-                addConnection(analyzer, precable, connection, addWeight(analyzer, landingpoint))
-                addConnection(analyzer, connection, precable, addWeight(analyzer, landingpoint))
-            precable = connection
+        entry = mp.get(map, landingpoint)
+        lstcables = me.getValue(entry)
+        fstcable =  None
+        for cable in lt.iterator(lstcables):
+            nxtcable = landingpoint + '-' + cable
+            if fstcable is not None:
+                addConnection(analyzer, fstcable, nxtcable, 0.10)
+                addConnection(analyzer, nxtcable, fstcable, 0.10)
+            fstcable = nxtcable
 
-def addCableInfo(analyzer, connection):
+def addLandingPointsByCountry(analyzer, country):
     """
-    Adiciona el ancho de banda en tbps de un cable específico
-    al map de cables
+    Adiciona los puntos de conexión de un país
+    específico
     """
-    cables = analyzer['cables']
-    cable = connection['cable_id']
-    existcable = mp.contains(cables, cable)
-    if existcable:
-        entry = mp.get(cables, cable)
-        value = me.getValue(entry)
-    else:
-        value = connection['capacityTBPS']
-        mp.put(cables, cable, value)
+    map = analyzer['landingpointsbycountry']
+    key = str(country['CountryName'])
+    value = getLandingPointsByCountry(analyzer, key)
+    mp.put(map, key, value)
 
-def addCountry(analyzer, country):
+def addCapitalLandingPoints(analyzer, country):
     """
-    Adiciona la información de un país específico al map de
-    paises
+    Adiciona los puntos de conexión de la capital de un país como
+    vértices del grafo, además crea un arco entre cada vértice
+    capital y los puntos de conexión de ese país
     """
-    key = country['CountryName']
-    key = key.replace(' ', '')
-    mp.put(analyzer['countries'], key, country)
-
-def addLandingPointsInfo(analyzer, landingpoint):
-    """
-    Adiciona la información espacial de un punto de conexión específico
-    al map de puntos de conexión
-    """
-    key = landingpoint['landing_point_id']
-    mp.put(analyzer['landingpointsinfo'], key, landingpoint)
+    countries = analyzer['landingpointsbycountry']
+    name = country['CountryName']
+    lstlandingpoints = me.getValue(mp.get(countries, str(name)))
+    for landingpoint in lt.iterator(lstlandingpoints):
+        cables = analyzer['cablesbylandingpoint']
+        lstcables = me.getValue(mp.get(cables, landingpoint))
+        for cable in lt.iterator(lstcables):
+            coords = analyzer['landingpointscoords']
+            origin = str(country['CapitalName']) + '-' + cable
+            destination = landingpoint + '-' + cable
+            originlat = float(country['CapitalLatitude'])
+            originlon = float(country['CapitalLongitude'])
+            destlat = me.getValue(mp.get(coords, landingpoint))[0]
+            destlon = me.getValue(mp.get(coords, landingpoint))[1]
+            distance = hs.haversine((originlat, originlon), (destlat, destlon))
+            if lt.isEmpty(lstcables) == False:
+                addLandingPoint(analyzer, origin)
+                addConnection(analyzer, origin, destination, distance)
+                addConnection(analyzer, destination, origin, distance)
 
 # Funciones para creación de datos
 
-def vertexStructureOrigin(connection):
+def vertexOrigin(connection):
     """
-    Crea la estructura del vértice con el id del punto de
-    conexión y el id del cable de conexión
+    Crea la estructura del vértice de
+    origen
     """
-    vertex = connection['\ufefforigin'] + '-'
-    vertex = vertex  + connection['cable_id']
+    vertex = connection['origin'] + '-'
+    vertex = vertex + connection['cable_id']
     return vertex
 
-def vertexStructureDestination(connection):
+def vertexDestination(connection):
     """
-    Crea la estructura del vértice con el id del punto de
-    conexión y el id del cable de conexión
+    Crea la estructura del vértice de
+    destino
     """
     vertex = connection['destination'] + '-'
-    vertex = vertex  + connection['cable_id']
+    vertex = vertex + connection['cable_id']
     return vertex
 
-def getDistance(connection):
+def haversineDistance(analyzer, connection):
     """
-    Retorna la distancia en km de un cable específico
+    Calcula la distancia en kilometros entre dos puntos
+    de conexión
     """
-    distance = connection['cable_length']
-    if distance == 'n.a.':
-        distance = 0
-    else:
-        distance = distance.replace(' km', '')
-        distance = distance.replace(',', '')
-    return float(distance)
-
-def getCapacity(connection):
-    """
-    Retorna el ancho de banda en tbps de un cable
-    específico
-    """
-    capacity = connection['capacityTBPS']
-    return float(capacity)
-
-def addWeight(analyzer, landingpoint):
-    """
-    Retorna una tupla con la distancia en km y el ancho de banda
-    mínimo en tbps como peso del arco entre dos vértices
-    de un punto de conexión
-    """
-    distance = 0.10
-    lstcapacity = []
-    lstcables = mp.get(analyzer['landingpoints'], landingpoint)['value']
-    for cable in lt.iterator(lstcables):
-        capacity = mp.get(analyzer['cables'], cable)['value']
-        lstcapacity.append(float(capacity))
-    mincapacity = min(lstcapacity)
-    return distance, mincapacity
+    map = analyzer['landingpointscoords']
+    origin = connection['origin']
+    destination = connection['destination']
+    originlat = me.getValue(mp.get(map, origin))[0]
+    originlon = me.getValue(mp.get(map, origin))[1]
+    destlat = me.getValue(mp.get(map, destination))[0]
+    destlon = me.getValue(mp.get(map, destination))[1]
+    distance = hs.haversine((originlat, originlon), (destlat, destlon))
+    return distance
 
 # Funciones de consulta
 
-def landingPointsSize(analyzer):
+def getLandingPointsByCountry(analyzer, country):
     """
-    Retorna el número de puntos de conexión del
-    grafo
+    Retorna una lista con los puntos de conexión de un país
+    específico
     """
-    return mp.size(analyzer['landingpoints'])
-
-def connectionsSize(analyzer):
-    """
-    Retorna el número de conexiones entre los puntos
-    de vértices del grafo
-    """
-    return gr.numEdges(analyzer['connections'])
-
-def countriesSize(analyzer):
-    """
-    Retorna el número de países cargados en el
-    analizador
-    """
-    return mp.size(analyzer['countries'])
+    map = analyzer['landingpointscoords']
+    lstlandingpoints = mp.keySet(map)
+    lstlandingsbycountry = lt.newList('ARRAY_LIST')
+    for landingpoint in lt.iterator(lstlandingpoints):
+        entry = mp.get(map, landingpoint)
+        value = me.getValue(entry)[2]
+        if country in value:
+            lt.addLast(lstlandingsbycountry, landingpoint)
+    return lstlandingsbycountry
