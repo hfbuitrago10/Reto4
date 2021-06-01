@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along withthis program. If not, see <http://www.gnu.org/licenses/>.
- """
+"""
 
 import config as cf
 import sys
@@ -30,7 +30,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import graph as gr
 assert cf
 
-sys.setrecursionlimit(10000*100)
+sys.setrecursionlimit(1000000*10)
 
 """
 La vista se encarga de la interacción con el usuario
@@ -57,13 +57,13 @@ def printMenu():
 
 def initAnalyzer():
     """
-    Inicializa el analizador de eventos
+    Inicializa el analizador de conexiones
     """
     return controller.initAnalyzer()
 
 def loadData(analyzer):
     """
-    Carga la información de los eventos al analizador
+    Carga la información de las conexiones al analizador
     """
     return controller.loadData(analyzer)
 
