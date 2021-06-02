@@ -46,7 +46,9 @@ def newAnalyzer():
     analyzer = {'connections': None,
                 'cablesbylandingpoint': None,
                 'landingpointscoords': None,
-                'landingpointsbycountry': None}
+                'landingpointsbycountry': None,
+                'sccomponents': None,
+                'minimumcostpaths': None}
     
     analyzer['connections'] = gr.newGraph('ADJ_LIST',
                                            True,
@@ -215,6 +217,12 @@ def haversineDistance(analyzer, connection):
 
 # Funciones de consulta
 
+def getLandingPoint(analyzer, landingpoint):
+    """
+    Retorna el id del punto de conexión
+    """
+    pass
+
 def getLandingPointsByCountry(analyzer, country):
     """
     Retorna una lista con los puntos de conexión de un país
@@ -229,3 +237,63 @@ def getLandingPointsByCountry(analyzer, country):
         if country in value:
             lt.addLast(lstlandingsbycountry, landingpoint)
     return lstlandingsbycountry
+
+def stronglyConnectedComponents(analyzer):
+    """
+    Retorna el número de componentes fuertemente
+    conectados del grafo
+    """
+    graph = analyzer['connections']
+    analyzer['sccomponents'] = scc.KosarajuSCC(graph)
+    return scc.connectedComponents(analyzer['sccomponents'])
+
+def stronglyConnectedVertexs(analyzer, vertexa, vertexb):
+    """
+    Retorna si dos vértices están fuertemente
+    conectados o no
+    """
+    sccomponents = analyzer['sccomponents']
+    return scc.stronglyConnected(sccomponents, vertexa, vertexb)
+
+def mostConnectedLandingPoint(analyzer):
+    """
+    Retorna el punto de conexión con mayor número de
+    cables conectados
+    """
+    map = analyzer['cablesbylandingpoint']
+    lstlandingpoints = mp.keySet(map)
+    maxlandingpoint = None
+    maxconnections = 0
+    for landingpoint in lt.iterator(lstlandingpoints):
+        entry = mp.get(map, landingpoint)
+        lstcables = me.getValue(entry)
+        connections = lt.size(lstcables)
+        if connections > maxconnections:
+            maxlandingpoint = landingpoint
+            maxconnections = connections
+    return maxlandingpoint, maxconnections
+
+def minimumCostPaths(analyzer, vertexa):
+    """
+    Retorna los caminos de costo mínimo desde un punto de conexión
+    inicial a todos los demás puntos de conexión
+    """
+    graph = analyzer['connections']
+    analyzer['minimumcostpaths'] = djk.Dijkstra(graph, vertexa)
+    return analyzer
+
+def hasPathTo(analyzer, vertexb):
+    """
+    Retorna si existe un camino entre el punto de conexión
+    inicial y un punto de conexión específico
+    """
+    paths = analyzer['minimumcostpaths']
+    return djk.hasPathTo(paths, vertexb)
+
+def minimumCostPath(analyzer, vertexb):
+    """
+    Retorna el camino de costo mínimo entre el punto de conexión
+    inicial y un punto de conexión específico
+    """
+    paths = analyzer['minimumcostpaths']
+    return djk.pathTo(paths, vertexb)
