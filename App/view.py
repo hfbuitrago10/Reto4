@@ -26,6 +26,7 @@ import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
+from DISClib.ADT import stack as st
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import graph as gr
 assert cf
@@ -37,6 +38,71 @@ La vista se encarga de la interacción con el usuario
 """
 
 # Funciones para la impresión de resultados
+
+def printFirstLandingPoint(analyzer):
+    """
+    Imprime la información del primer punto de conexión
+    cargado
+    """
+    map = analyzer['landingpointscoords']
+    lstlandingpoints = mp.keySet(map)
+    key = lt.firstElement(lstlandingpoints)
+    entry = mp.get(map, key)
+    value = me.getValue(mp.get(map, key))
+    print("---------- Primer punto de conexión ----------")
+    print("Nombre: " + str(value[2]) + "  Identificador: " + str(key) + "  Latitud: " + str(value[0]) +
+    "  Longitud: " + str(value[1]) + "\n")
+
+def printStronglyConnectedVertexs(analyzer, vertexa, vertexb):
+    """
+    Imprime si dos vértices están fuertemente
+    conectados
+    """
+    scvertexs = controller.stronglyConnectedVertexs(analyzer, vertexa, vertexb)
+    if scvertexs == True:
+        print("Los puntos de conexión " + str(vertexa) + " y " + str(vertexb) + " se encuntran en" +
+        " el mismo cluster de conexiones\n")
+    else:
+        print("Los puntos de conexión " + str(vertexa) + " y " + str(vertexb) + " no se encuntran en" +
+        " el mismo cluster de conexiones\n")
+
+def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
+    """
+    Imprime el punto de conexión con mayor número de cables
+    conectados
+    """
+    map = analyzer['landingpointscoords']
+    key = landingpoint
+    value = me.getValue(mp.get(map, key))
+    print("---------- Punto de conexión con más cables conectados ----------")
+    print("Nombre: " + str(value[2].split(', ')[0]) + "  País: " + str(value[2].split(', ')[1]) +
+    "  Identificador: " + str(landingpoint))
+    print("Total cables conectados: " + str(cables) + "\n")
+
+def printMinimumCostPath(analyzer, vertexb):
+    """
+    Imprime el camino de costo mínimo entre un punto de conexión
+    inicial y un punto de conexión específico
+    """
+    haspath = controller.hasPathTo(analyzer, vertexb)
+    if haspath == True:
+        minimuncostpath = controller.minimumCostPath(analyzer, vertexb)
+        distance = 0
+        size = lt.size(minimuncostpath)
+        index = 1
+        print("\n---------- Camino de costo mínimo ----------\n")
+        while index <= size:
+            connection = lt.getElement(minimuncostpath, index)
+            print("\n---------- Conexión " + str(index) + "----------")
+            print("Origen: " + str(connection['vertexA']) + "\nDestino: " + str(connection['vertexB']) +
+            "\nDistancia: " + str(connection['weight']) + " km")
+            distance += connection['weight']
+            index += 1
+        print("\nTotal distancia: " + str(distance) + " km")
+        print()
+    else:
+        print("\nNo existe camino entre los puntos de conexión")
+        print()
 
 # Menú de opciones
 
@@ -84,15 +150,30 @@ while True:
         print()
         print("Cargando información de las conexiones....\n")
         data = loadData(analyzer)
+        print("Total puntos de conexión: ")
+        print("Total conexiones: ")
+        print("Total países: " + "\n")
+        printFirstLandingPoint(analyzer)
     
     elif int(inputs[0]) == 3:
-        pass
+        print()
+        vertexa = str(input("Ingrese punto de conexión: "))
+        vertexb = str(input("Ingrese punto de conexión: "))
+        print("\nTotal clusters: " + str(controller.stronglyConnectedComponents(analyzer)))
+        printStronglyConnectedVertexs(analyzer, vertexa, vertexb)
 
     elif int(inputs[0]) == 4:
-        pass
+        print()
+        landingpoint = controller.mostConnectedLandingPoint(analyzer)[0]
+        cables = controller.mostConnectedLandingPoint(analyzer)[1]
+        printMostConnectedLandingPoint(analyzer, landingpoint, cables)
 
     elif int(inputs[0]) == 5:
-        pass
+        print()
+        vertexa = str(input("Ingrese punto de conexión: "))
+        vertexb = str(input("Ingrese punto de conexión: "))
+        controller.minimumCostPaths(analyzer, vertexa)
+        printMinimumCostPath(analyzer, vertexb)
 
     elif int(inputs[0]) == 6:
         pass
