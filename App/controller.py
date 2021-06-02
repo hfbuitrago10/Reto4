@@ -86,3 +86,45 @@ def loadCountries(analyzer):
         model.addCapitalLandingPoints(analyzer, country)
 
 # Funciones de consulta
+
+def stronglyConnectedComponents(analyzer):
+    """
+    Retorna el número de componentes fuertemente conectados
+    del grafo de conexiones
+    """
+    return model.stronglyConnectedComponents(analyzer)
+
+def stronglyConnectedVertexs(analyzer, vertexa, vertexb):
+    """
+    Retorna si dos vértices están fuertemente
+    conectados o no
+    """
+    return model.stronglyConnectedVertexs(analyzer, vertexa, vertexb)
+
+def mostConnectedLandingPoint(analyzer):
+    """
+    Retorna el punto de conexión con mayor número de
+    cables conectados
+    """
+    return model.mostConnectedLandingPoint(analyzer)
+
+def minimumCostPaths(analyzer, vertexa):
+    """
+    Retorna los caminos de costo mínimo desde un punto de conexión
+    inicial a todos los demás puntos de conexión
+    """
+    return model.minimumCostPaths(analyzer, vertexa)
+
+def hasPathTo(analyzer, vertexb):
+    """
+    Retorna si existe un camino entre el punto de conexión
+    inicial y un punto de conexión específico
+    """
+    return model.hasPathTo(analyzer, vertexb)
+
+def minimumCostPath(analyzer, vertexb):
+    """
+    Retorna el camino de costo mínimo entre el punto de conexión
+    inicial y un punto de conexión específico
+    """
+    return model.minimumCostPath(analyzer, vertexb)
