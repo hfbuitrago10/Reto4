@@ -45,7 +45,9 @@ def newAnalyzer():
     """
     analyzer = {'connections': None,
                 'cablesbylandingpoint': None,
+                'connectedlandingpoints': None,
                 'landingpointscoords': None,
+                'countries': None,
                 'landingpointsbycountry': None,
                 'sccomponents': None,
                 'minimumcostpaths': None}
@@ -55,7 +57,9 @@ def newAnalyzer():
                                            100000)
     
     analyzer['cablesbylandingpoint'] = mp.newMap()
+    analyzer['connectedlandingpoints'] = mp.newMap()
     analyzer['landingpointscoords'] = mp.newMap()
+    analyzer['countries'] = mp.newMap()
     analyzer['landingpointsbycountry'] = mp.newMap()
 
     return analyzer
@@ -114,6 +118,23 @@ def addCablesByLandingPoint(analyzer, connection, landingpoint):
             lt.addLast(lstcables, connection['cable_id'])
     return analyzer
 
+def addConnectedLandingPoints(analyzer, connection):
+    """
+    Adiciona la lista de puntos de conexión conectados con un
+    punto de conexión específico
+    """
+    map = analyzer['connectedlandingpoints']
+    entry = mp.get(map, connection['origin'])
+    if entry is None:
+        lstconnections = lt.newList('ARRAY_LIST')
+        lt.addLast(lstconnections, connection['destination'])
+        mp.put(map, connection['origin'], lstconnections)
+    else:
+        lstconnections = entry['value']
+        if not lt.isPresent(lstconnections, connection['destination']):
+            lt.addLast(lstconnections, connection['destination'])
+    return analyzer
+
 def addLandingPointsCoords(analyzer, landingpoint):
     """
     Adiciona las coordenadas geográficas de un punto de
@@ -143,6 +164,18 @@ def addLocalConnections(analyzer):
                 addConnection(analyzer, fstcable, nxtcable, 0.10)
                 addConnection(analyzer, nxtcable, fstcable, 0.10)
             fstcable = nxtcable
+
+def addCountries(analyzer, country):
+    """
+    Adiciona la capital, la poblacion y el número de
+    usuarios de cada país
+    """
+    map = analyzer['countries']
+    key = str(country['CountryName'])
+    capital = str(country['CapitalName'])
+    population = float(country['Population'])
+    users = float(country['Internet users'])
+    mp.put(map, key, (capital, population, users))
 
 def addLandingPointsByCountry(analyzer, country):
     """
@@ -223,6 +256,32 @@ def getLandingPoint(analyzer, landingpoint):
     """
     pass
 
+def getLandingPointCountry(analyzer, landingpoint):
+    """
+    Retorna el país de un punto de conexión
+    """
+    map = analyzer['landingpointscoords']
+    location = me.getValue(mp.get(map, landingpoint))[2]
+    lstlocation = location.split(', ')
+    if len(lstlocation) == 3:
+        country = lstlocation[2]
+    else:
+        country = lstlocation[1]
+    return country
+
+def getHarvesineDistance(analyzer, origin, destination):
+    """
+    Retorna la distancia en kilometros entre dos puntos
+    de conexión
+    """
+    map = analyzer['landingpointscoords']
+    originlat = me.getValue(mp.get(map, origin))[0]
+    originlon = me.getValue(mp.get(map, origin))[1]
+    destlat = me.getValue(mp.get(map, destination))[0]
+    destlon = me.getValue(mp.get(map, destination))[1]
+    distance = hs.haversine((originlat, originlon), (destlat, destlon))
+    return distance
+
 def getLandingPointsByCountry(analyzer, country):
     """
     Retorna una lista con los puntos de conexión de un país
@@ -297,3 +356,40 @@ def minimumCostPath(analyzer, vertexb):
     """
     paths = analyzer['minimumcostpaths']
     return djk.pathTo(paths, vertexb)
+
+def getAdjacentsVertexs(analyzer, vertex):
+    """
+    Retorna la lista de vértices adyacentes de un punto de
+    conexión específico
+    """
+    graph = analyzer['connections']
+    adjacents = gr.adjacents(graph, vertex)
+    return adjacents
+
+def getConnectedCountries(analyzer, landingpoint):
+    """
+    Retorna un árbol tipo 'RBT' de paises conectados a un
+    punto de conexión específico
+    """
+    map = analyzer['connectedlandingpoints']
+    ordmap = om.newMap('RBT', compareValuesDescOrder)
+    lstlandingpoints = me.getValue(mp.get(map, landingpoint))
+    for connection in lt.iterator(lstlandingpoints):
+        country = getLandingPointCountry(analyzer, connection)
+        distance = getHarvesineDistance(analyzer, landingpoint, connection)
+        om.put(ordmap, distance, country)
+    return ordmap
+
+# Funciones de comparación
+
+def compareValuesDescOrder(value1, value2):
+    """
+    Compara los valores de una característica
+    de dos eventos en orden descendente
+    """
+    if (value1 == value2):
+        return 0
+    elif (value1 > value2):
+        return -1
+    else:
+        return 1
