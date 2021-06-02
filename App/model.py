@@ -47,6 +47,7 @@ def newAnalyzer():
                 'cablesbylandingpoint': None,
                 'connectedlandingpoints': None,
                 'landingpointscoords': None,
+                'landingpointsnames': None,
                 'countries': None,
                 'landingpointsbycountry': None,
                 'sccomponents': None,
@@ -59,6 +60,7 @@ def newAnalyzer():
     analyzer['cablesbylandingpoint'] = mp.newMap()
     analyzer['connectedlandingpoints'] = mp.newMap()
     analyzer['landingpointscoords'] = mp.newMap()
+    analyzer['landingpointsnames'] = mp.newMap()
     analyzer['countries'] = mp.newMap()
     analyzer['landingpointsbycountry'] = mp.newMap()
 
@@ -146,6 +148,17 @@ def addLandingPointsCoords(analyzer, landingpoint):
     longitude = float(landingpoint['longitude'])
     name = str(landingpoint['name'])
     mp.put(map, key, (latitude, longitude, name))
+
+def addLandingPointsNames(analyzer, landingpoint):
+    """
+    Adiciona el nombre de un punto de conexión
+    específico
+    """
+    map = analyzer['landingpointsnames']
+    name = str(landingpoint['name'])
+    key = name.split(', ')[0]
+    value = landingpoint['landing_point_id']
+    mp.put(map, key, value)
 
 def addLocalConnections(analyzer):
     """
@@ -250,11 +263,14 @@ def haversineDistance(analyzer, connection):
 
 # Funciones de consulta
 
-def getLandingPoint(analyzer, landingpoint):
+def getLandingPoint(analyzer, landingpointname):
     """
-    Retorna el id del punto de conexión
+    Retorna el identificador de un punto de conexión
+    específico
     """
-    pass
+    map = analyzer['landingpointsnames']
+    landingpoint = me.getValue(mp.get(map, landingpointname))
+    return landingpoint
 
 def getLandingPointCountry(analyzer, landingpoint):
     """
