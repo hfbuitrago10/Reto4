@@ -90,7 +90,7 @@ def printMinimumCostPath(analyzer, vertexb):
         distance = 0
         size = lt.size(minimuncostpath)
         index = 1
-        print("\n---------- Camino de costo mínimo ----------\n")
+        print("\n---------- Camino de costo mínimo ----------")
         while index <= size:
             connection = lt.getElement(minimuncostpath, index)
             print("\n---------- Conexión " + str(index) + "----------")
@@ -103,6 +103,26 @@ def printMinimumCostPath(analyzer, vertexb):
     else:
         print("\nNo existe camino entre los puntos de conexión")
         print()
+
+def printConnectedCountries(analyzer, landingpoint):
+    """
+    Imprime los países conectados a un punto de conexión
+    específico en orden descendente de distancia
+    """
+    ordmap = controller.getConnectedCountries(analyzer, landingpoint)
+    keys = om.keySet(ordmap)
+    values = om.valueSet(ordmap)
+    size = om.size(ordmap)
+    index = 1
+    print("\n---------- Países afectados ----------")
+    while index <= size:
+        country = lt.getElement(values, index)
+        distance = lt.getElement(keys, index)
+        print(str(index) + ". " + str(country) + "  Distancia: " + str(distance) + " km")
+        index += 1
+    print()
+    print("Total países afectados: " + str(size) + "\n")
+
 
 # Menú de opciones
 
@@ -179,7 +199,9 @@ while True:
         pass
 
     elif int(inputs[0]) == 7:
-        pass
+        print()
+        landingpoint = str(input("Ingrese punto de conexión: "))
+        printConnectedCountries(analyzer, landingpoint)
 
     elif int(inputs[0]) == 8:
         pass
