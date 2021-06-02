@@ -70,6 +70,7 @@ def loadConnections(analyzer):
     input_file = csv.DictReader(open(connectionsfile, encoding='utf-8-sig'))
     for connection in input_file:
         model.addLandingPointConnection(analyzer, connection)
+        model.addConnectedLandingPoints(analyzer, connection)
     model.addLocalConnections(analyzer)
     return analyzer
 
@@ -82,6 +83,7 @@ def loadCountries(analyzer):
     countriesfile = cf.data_dir + 'countries.csv'
     input_file = csv.DictReader(open(countriesfile, encoding='utf-8'))
     for country in input_file:
+        model.addCountries(analyzer, country)
         model.addLandingPointsByCountry(analyzer, country)
         model.addCapitalLandingPoints(analyzer, country)
 
@@ -128,3 +130,17 @@ def minimumCostPath(analyzer, vertexb):
     inicial y un punto de conexión específico
     """
     return model.minimumCostPath(analyzer, vertexb)
+
+def getAdjacentLandingPoints(analyzer, vertex):
+    """
+    Retorna la lista de vértices adyacentes de un punto de
+    conexión
+    """
+    return model.getAdjacentLandingPoints(analyzer, vertex)
+
+def getConnectedCountries(analyzer, landingpoint):
+    """
+    Retorna un árbol tipo 'RBT' de paises conectados a un
+    punto de conexión específico
+    """
+    return model.getConnectedCountries(analyzer, landingpoint)
