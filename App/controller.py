@@ -59,6 +59,7 @@ def loadLandingPoints(analyzer):
     input_file = csv.DictReader(open(landingpointsfile, encoding='utf-8-sig'))
     for landingpoint in input_file:
         model.addLandingPointsCoords(analyzer, landingpoint)
+        model.addLandingPointsNames(analyzer, landingpoint)
 
 def loadConnections(analyzer):
     """
@@ -88,6 +89,13 @@ def loadCountries(analyzer):
         model.addCapitalLandingPoints(analyzer, country)
 
 # Funciones de consulta
+
+def getLandingPoint(analyzer, landingpointname):
+    """
+    Retorna el identificador de un punto de conexión
+    específico
+    """
+    return model.getLandingPoint(analyzer, landingpointname)
 
 def stronglyConnectedComponents(analyzer):
     """
