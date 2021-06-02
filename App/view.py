@@ -49,8 +49,8 @@ def printFirstLandingPoint(analyzer):
     key = lt.firstElement(lstlandingpoints)
     value = me.getValue(mp.get(map, key))
     print("---------- Primer punto de conexión cargado ----------")
-    print("Nombre: " + str(value[2]) + "  Identificador: " + str(key) + "  Latitud: " + str(value[0]) +
-    "  Longitud: " + str(value[1]) + "\n")
+    print("Nombre: " + str(value[2].split(', ')[0]) + "  Identificador: " + str(key) + "  Latitud: " +
+    str(value[0]) + "  Longitud: " + str(value[1]) + "\n")
 
 def printLastCountry(analyzer):
     """
@@ -63,18 +63,17 @@ def printLastCountry(analyzer):
     print("---------- Último país cargado ----------")
     print("País: " + str(key) + "  Población: " + str(value[1]) + "  Usuarios: " + str(value[2]) + "\n")
 
-def printStronglyConnectedVertexs(analyzer, vertexa, vertexb):
+def printStronglyConnectedLandingPoints(scvertexs, landingpointnamea, landingpointnameb):
     """
-    Imprime si dos vértices están fuertemente
+    Imprime si dos puntos de conexión están fuertemente
     conectados
     """
-    scvertexs = controller.stronglyConnectedVertexs(analyzer, vertexa, vertexb)
     if scvertexs == True:
-        print("Los puntos de conexión " + str(vertexa) + " y " + str(vertexb) + " se encuntran en" +
-        " el mismo cluster de conexiones\n")
+        print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el mismo" +
+        " cluster? Sí")
     else:
-        print("Los puntos de conexión " + str(vertexa) + " y " + str(vertexb) + " no se encuntran en" +
-        " el mismo cluster de conexiones\n")
+        print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el mismo" +
+        " cluster? No")
 
 def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
     """
@@ -187,11 +186,17 @@ while True:
     
     elif int(inputs[0]) == 3:
         print()
-        vertexa = str(input("Ingrese punto de conexión: "))
-        vertexb = str(input("Ingrese punto de conexión: "))
+        landingpointnamea = str(input("Ingrese punto de conexión: "))
+        landingpointnameb = str(input("Ingrese punto de conexión: "))
+        landingpointa = controller.getLandingPoint(analyzer, landingpointnamea)
+        landingpointb = controller.getLandingPoint(analyzer, landingpointnameb)
+        vertexa = controller.getVertexByLandingPoint(analyzer, landingpointa)
+        vertexb = controller.getVertexByLandingPoint(analyzer, landingpointb)
+        sccomponents = controller.stronglyConnectedComponents(analyzer)
+        scvertexs = controller.stronglyConnectedVertexs(analyzer, vertexa, vertexb)
         print("\n---------- Clusters de conexión ----------")
-        print("Total clusters: " + str(controller.stronglyConnectedComponents(analyzer)))
-        printStronglyConnectedVertexs(analyzer, vertexa, vertexb)
+        printStronglyConnectedLandingPoints(scvertexs, landingpointnamea, landingpointnameb)
+        print("Total clusters: " + str(sccomponents) + "\n")
 
     elif int(inputs[0]) == 4:
         print()
@@ -201,8 +206,10 @@ while True:
 
     elif int(inputs[0]) == 5:
         print()
-        vertexa = str(input("Ingrese punto de conexión: "))
-        vertexb = str(input("Ingrese punto de conexión: "))
+        countrya = str(input("Ingrese país: "))
+        countryb = str(input("Ingrese país: "))
+        vertexa = controller.getCapitalVertexByCountry(analyzer, countrya)
+        vertexb = controller.getCapitalVertexByCountry(analyzer, countryb)
         controller.minimumCostPaths(analyzer, vertexa)
         printMinimumCostPath(analyzer, vertexb)
 

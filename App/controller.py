@@ -97,6 +97,20 @@ def getLandingPoint(analyzer, landingpointname):
     """
     return model.getLandingPoint(analyzer, landingpointname)
 
+def getVertexByLandingPoint(analyzer, landingpoint):
+    """
+    Retorna un vértice de un punto de conexión
+    específico
+    """
+    return model.getVertexByLandingPoint(analyzer, landingpoint)
+
+def getCapitalVertexByCountry(analyzer, country):
+    """
+    Retorna un vértice del punto de conexión de la
+    capital de un país específico
+    """
+    return model.getCapitalVertexByCountry(analyzer, country)
+
 def stronglyConnectedComponents(analyzer):
     """
     Retorna el número de componentes fuertemente conectados
@@ -138,13 +152,6 @@ def minimumCostPath(analyzer, vertexb):
     inicial y un punto de conexión específico
     """
     return model.minimumCostPath(analyzer, vertexb)
-
-def getAdjacentLandingPoints(analyzer, vertex):
-    """
-    Retorna la lista de vértices adyacentes de un punto de
-    conexión
-    """
-    return model.getAdjacentLandingPoints(analyzer, vertex)
 
 def getConnectedCountries(analyzer, landingpoint):
     """

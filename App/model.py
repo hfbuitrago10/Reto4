@@ -272,9 +272,21 @@ def getLandingPoint(analyzer, landingpointname):
     landingpoint = me.getValue(mp.get(map, landingpointname))
     return landingpoint
 
-def getLandingPointCountry(analyzer, landingpoint):
+def getVertexByLandingPoint(analyzer, landingpoint):
+    """
+    Retorna un vértice de un punto de conexión
+    específico
+    """
+    map = analyzer['cablesbylandingpoint']
+    lstcables = me.getValue(mp.get(map, landingpoint))
+    cable = lt.firstElement(lstcables)
+    vertex = landingpoint + '-' + cable
+    return vertex
+
+def getCountryByLandingPoint(analyzer, landingpoint):
     """
     Retorna el país de un punto de conexión
+    específico
     """
     map = analyzer['landingpointscoords']
     location = me.getValue(mp.get(map, landingpoint))[2]
@@ -284,6 +296,29 @@ def getLandingPointCountry(analyzer, landingpoint):
     else:
         country = lstlocation[1]
     return country
+
+def getCapitalByCountry(analyzer, country):
+    """
+    Retorna la capital de un país específico
+    """
+    map = analyzer['countries']
+    capital = me.getValue(mp.get(map, country))[0]
+    return capital
+
+def getCapitalVertexByCountry(analyzer, country):
+    """
+    Retorna un vértice del punto de conexión de la capital
+    de un país específico
+    """
+    map = analyzer['landingpointsbycountry']
+    lstlandingpoints = me.getValue(mp.get(map, country))
+    landingpoint = lt.firstElement(lstlandingpoints)
+    cables = analyzer['cablesbylandingpoint']
+    lstcables = me.getValue(mp.get(cables, landingpoint))
+    cable = lt.firstElement(lstcables)
+    capital = getCapitalByCountry(analyzer, country)
+    vertex = capital + '-' + cable
+    return vertex
 
 def getHarvesineDistance(analyzer, origin, destination):
     """
@@ -373,15 +408,6 @@ def minimumCostPath(analyzer, vertexb):
     paths = analyzer['minimumcostpaths']
     return djk.pathTo(paths, vertexb)
 
-def getAdjacentsVertexs(analyzer, vertex):
-    """
-    Retorna la lista de vértices adyacentes de un punto de
-    conexión específico
-    """
-    graph = analyzer['connections']
-    adjacents = gr.adjacents(graph, vertex)
-    return adjacents
-
 def getConnectedCountries(analyzer, landingpoint):
     """
     Retorna un árbol tipo 'RBT' de paises conectados a un
@@ -391,7 +417,7 @@ def getConnectedCountries(analyzer, landingpoint):
     ordmap = om.newMap('RBT', compareValuesDescOrder)
     lstlandingpoints = me.getValue(mp.get(map, landingpoint))
     for connection in lt.iterator(lstlandingpoints):
-        country = getLandingPointCountry(analyzer, connection)
+        country = getCountryByLandingPoint(analyzer, connection)
         distance = getHarvesineDistance(analyzer, landingpoint, connection)
         om.put(ordmap, distance, country)
     return ordmap
