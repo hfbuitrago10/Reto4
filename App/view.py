@@ -132,6 +132,20 @@ def printConnectedCountries(analyzer, landingpoint):
     print()
     print("Total países afectados: " + str(size) + "\n")
 
+def printMaximumBandwidthByCountry(analyzer, countrya, cable):
+    """
+    """
+    map = controller.maximumBandwidthByCountry(analyzer, cable)
+    lstcountries = mp.keySet(map)
+    print("\n---------- Países conectados a " + str(cable) + " ----------")
+    for country in lt.iterator(lstcountries):
+        if country is not None and country != countrya:
+            entry = mp.get(map, country)
+            maxbandwidth = me.getValue(entry)
+            print("País: " + str(country) + "   Máximo ancho de banda: " + str(maxbandwidth) +
+            " mbps")
+    print()
+
 # Menú de opciones
 
 def printMenu():
@@ -214,7 +228,11 @@ while True:
         printMinimumCostPath(analyzer, vertexb)
 
     elif int(inputs[0]) == 6:
-        pass
+        controller.minimumSpanningTrees(analyzer)
+        minspanningtree = controller.minimumSpanningTree(analyzer)
+        print("\n---------- Red de expansión mínima ----------")
+        print("Total nodos conectados: " + str(minspanningtree[0]))
+        print("Costo total: " + str(minspanningtree[1]) + " km\n")
 
     elif int(inputs[0]) == 7:
         print()
@@ -223,7 +241,10 @@ while True:
         printConnectedCountries(analyzer, landingpoint)
 
     elif int(inputs[0]) == 8:
-        pass
+        print()
+        countrya = str(input("Ingrese país: "))
+        cable = str(input("Ingrese cable: "))
+        printMaximumBandwidthByCountry(analyzer, countrya, cable)
 
     elif int(inputs[0]) == 9:
         pass
