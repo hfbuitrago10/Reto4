@@ -72,6 +72,8 @@ def loadConnections(analyzer):
     for connection in input_file:
         model.addLandingPointConnection(analyzer, connection)
         model.addConnectedLandingPoints(analyzer, connection)
+        model.addLandingPointsByCable(analyzer, connection)
+        model.addBandwidthByCable(analyzer, connection)
     model.addLocalConnections(analyzer)
     return analyzer
 
@@ -153,9 +155,37 @@ def minimumCostPath(analyzer, vertexb):
     """
     return model.minimumCostPath(analyzer, vertexb)
 
+def minimumSpanningTrees(analyzer):
+    """
+    Retorna los árboles de expansión mínimos
+    del grafo
+    """
+    return model.minimumSpanningTrees(analyzer)
+
+def minimumSpanningTree(analyzer):
+    """
+    Retorna el número de vértices y el costo del árbol
+    de expansión mínimo
+    """
+    return model.minimumSpanningTree(analyzer)
+
 def getConnectedCountries(analyzer, landingpoint):
     """
     Retorna un árbol tipo 'RBT' de paises conectados a un
     punto de conexión específico
     """
     return model.getConnectedCountries(analyzer, landingpoint)
+
+def getCountriesByCable(analyzer, cable):
+    """
+    Retorna la lista de paises conectados a un cable
+    específico
+    """
+    return model.getCountriesByCable(analyzer, cable)
+
+def maximumBandwidthByCountry(analyzer, cable):
+    """
+    Retorna el máximo ancho de banda de los países conectados
+    por un cable específico
+    """
+    return model.maximumBandwidthByCountry(analyzer, cable)

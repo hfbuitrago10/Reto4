@@ -46,19 +46,24 @@ def newAnalyzer():
     analyzer = {'connections': None,
                 'cablesbylandingpoint': None,
                 'connectedlandingpoints': None,
+                'landingpointsbycable': None,
+                'bandwidthbycable': None,
                 'landingpointscoords': None,
                 'landingpointsnames': None,
                 'countries': None,
                 'landingpointsbycountry': None,
                 'sccomponents': None,
-                'minimumcostpaths': None}
+                'minimumcostpaths': None,
+                'minimumspanningtrees': None}
     
     analyzer['connections'] = gr.newGraph('ADJ_LIST',
-                                           True,
+                                           False,
                                            100000)
     
     analyzer['cablesbylandingpoint'] = mp.newMap()
     analyzer['connectedlandingpoints'] = mp.newMap()
+    analyzer['landingpointsbycable'] = mp.newMap()
+    analyzer['bandwidthbycable'] = mp.newMap()
     analyzer['landingpointscoords'] = mp.newMap()
     analyzer['landingpointsnames'] = mp.newMap()
     analyzer['countries'] = mp.newMap()
@@ -80,7 +85,6 @@ def addLandingPointConnection(analyzer, connection):
     addLandingPoint(analyzer, origin)
     addLandingPoint(analyzer, destination)
     addConnection(analyzer, origin, destination, distance)
-    addConnection(analyzer, destination, origin, distance)
     addCablesByLandingPoint(analyzer, connection, 'origin')
     addCablesByLandingPoint(analyzer, connection, 'destination')
 
@@ -137,6 +141,40 @@ def addConnectedLandingPoints(analyzer, connection):
             lt.addLast(lstconnections, connection['destination'])
     return analyzer
 
+def addLandingPointsByCable(analyzer, connection):
+    """
+    Adiciona la lista de puntos de conexión conectados por
+    un cable específico
+    """
+    map = analyzer['landingpointsbycable']
+    entry = mp.get(map, connection['cable_id'])
+    if entry is None:
+        lstlandingpoints = lt.newList('ARRAY_LIST')
+        lt.addLast(lstlandingpoints, connection['origin'])
+        mp.put(map, connection['cable_id'], lstlandingpoints)
+    else:
+        lstlandingpoints = entry['value']
+        if not lt.isPresent(lstlandingpoints, connection['origin']):
+            lt.addLast(lstlandingpoints, connection['origin'])
+    return analyzer
+
+def addBandwidthByCable(analyzer, connection):
+    """
+    Adiciona la capacidad de transferencia en terabits
+    de cada cable
+    """
+    map = analyzer['bandwidthbycable']
+    entry = mp.get(map, connection['cable_id'])
+    if entry is None:
+        lstbandwidth = lt.newList('ARRAY_LIST')
+        lt.addLast(lstbandwidth, float(connection['capacityTBPS']))
+        mp.put(map, connection['cable_id'], lstbandwidth)
+    else:
+        lstbandwidth = entry['value']
+        if not lt.isPresent(lstbandwidth, float(connection['capacityTBPS'])):
+            lt.addLast(lstbandwidth, float(connection['capacityTBPS']))
+    return analyzer
+
 def addLandingPointsCoords(analyzer, landingpoint):
     """
     Adiciona las coordenadas geográficas de un punto de
@@ -175,7 +213,6 @@ def addLocalConnections(analyzer):
             nxtcable = landingpoint + '-' + cable
             if fstcable is not None:
                 addConnection(analyzer, fstcable, nxtcable, 0.10)
-                addConnection(analyzer, nxtcable, fstcable, 0.10)
             fstcable = nxtcable
 
 def addCountries(analyzer, country):
@@ -224,7 +261,6 @@ def addCapitalLandingPoints(analyzer, country):
             if lt.isEmpty(lstcables) == False:
                 addLandingPoint(analyzer, origin)
                 addConnection(analyzer, origin, destination, distance)
-                addConnection(analyzer, destination, origin, distance)
 
 # Funciones para creación de datos
 
@@ -408,6 +444,38 @@ def minimumCostPath(analyzer, vertexb):
     paths = analyzer['minimumcostpaths']
     return djk.pathTo(paths, vertexb)
 
+def minimumSpanningTrees(analyzer):
+    """
+    Retorna los árboles de expansión mínimos
+    del grafo
+    """
+    graph = analyzer['connections']
+    analyzer['minimumspanningtrees'] = pm.PrimMST(graph)
+    return analyzer
+
+def minimumSpanningTree(analyzer):
+    """
+    Retorna el número de vértices y el costo del árbol
+    de expansión mínimo
+    """
+    map = analyzer['minimumspanningtrees']['distTo']
+    lstvertexs = mp.keySet(map)
+    distance = 0
+    vertexsize = 0
+    for vertex in lt.iterator(lstvertexs):
+        weight = me.getValue(mp.get(map, vertex))
+        if vertex is not None:
+            distance += weight
+            vertexsize += 1
+    return vertexsize, distance
+
+def depthFirstSearch(analyzer):
+    """
+    Retorna un recorrido depth first search sobre
+    el grafo
+    """
+    pass
+
 def getConnectedCountries(analyzer, landingpoint):
     """
     Retorna un árbol tipo 'RBT' de paises conectados a un
@@ -421,6 +489,37 @@ def getConnectedCountries(analyzer, landingpoint):
         distance = getHarvesineDistance(analyzer, landingpoint, connection)
         om.put(ordmap, distance, country)
     return ordmap
+
+def getCountriesByCable(analyzer, cable):
+    """
+    Retorna la lista de paises conectados a un cable
+    específico
+    """
+    countriesbycable = mp.newMap()
+    map = analyzer['landingpointsbycable']
+    lstlandingpoints = me.getValue(mp.get(map, cable))
+    lstcountries = lt.newList('ARRAY_LIST')
+    for landingpoint in lt.iterator(lstlandingpoints):
+        country = getCountryByLandingPoint(analyzer, landingpoint)
+        if not lt.isPresent(lstcountries, country):
+            lt.addLast(lstcountries, country)
+    mp.put(countriesbycable, cable, lstcountries)
+    return me.getValue(mp.get(countriesbycable, cable))
+
+def maximumBandwidthByCountry(analyzer, cable):
+    """
+    Retorna el maximo ancho de banda de los países conectados
+    por un cable específico
+    """
+    bandwidthbycountry = mp.newMap()
+    map = analyzer['bandwidthbycable']
+    lstcountries = getCountriesByCable(analyzer, cable)
+    for country in lt.iterator(lstcountries):
+        capacity = lt.firstElement(me.getValue(mp.get(map, cable)))
+        users = me.getValue(mp.get(analyzer['countries'], country))[2]
+        maxbandwidth = capacity/users
+        mp.put(bandwidthbycountry, country, maxbandwidth*1000000)
+    return bandwidthbycountry
 
 # Funciones de comparación
 
