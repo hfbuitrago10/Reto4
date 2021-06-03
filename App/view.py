@@ -115,8 +115,8 @@ def printMinimumCostPath(analyzer, vertexb):
 
 def printConnectedCountries(analyzer, landingpoint):
     """
-    Imprime los países conectados a un punto de conexión
-    específico en orden descendente de distancia
+    Imprime los países conectados a un punto de conexión específico
+    en orden descendente de distancia en km
     """
     ordmap = controller.getConnectedCountries(analyzer, landingpoint)
     keys = om.keySet(ordmap)
@@ -134,6 +134,8 @@ def printConnectedCountries(analyzer, landingpoint):
 
 def printMaximumBandwidthByCountry(analyzer, countrya, cable):
     """
+    Imprime los países conectados a un cable específico con su máximo
+    ancho de banda en mbps
     """
     map = controller.maximumBandwidthByCountry(analyzer, cable)
     lstcountries = mp.keySet(map)
