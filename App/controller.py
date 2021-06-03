@@ -144,14 +144,14 @@ def minimumCostPaths(analyzer, vertexa):
 def hasPathTo(analyzer, vertexb):
     """
     Retorna si existe un camino entre el punto de conexión
-    inicial y un punto de conexión específico
+    inicial y un punto de conexión destino
     """
     return model.hasPathTo(analyzer, vertexb)
 
 def minimumCostPath(analyzer, vertexb):
     """
     Retorna el camino de costo mínimo entre el punto de conexión
-    inicial y un punto de conexión específico
+    inicial y un punto de conexión destino
     """
     return model.minimumCostPath(analyzer, vertexb)
 
@@ -171,7 +171,7 @@ def minimumSpanningTree(analyzer):
 
 def getConnectedCountries(analyzer, landingpoint):
     """
-    Retorna un árbol tipo 'RBT' de paises conectados a un
+    Retorna un árbol tipo 'RBT' de países conectados a un
     punto de conexión específico
     """
     return model.getConnectedCountries(analyzer, landingpoint)
@@ -189,3 +189,38 @@ def maximumBandwidthByCountry(analyzer, cable):
     por un cable específico
     """
     return model.maximumBandwidthByCountry(analyzer, cable)
+
+def getCoordinatesByIPAddress(ipaddress):
+    """
+    Retorna las coordenadas geográficas de una
+    dirección IP
+    """
+    return model.getCoordinatesByIPAddress(ipaddress)
+
+def getClosestLandingPoint(analyzer, coordinates):
+    """
+    Retorna el punto de conexión más cercano a un punto
+    geográfico específico
+    """
+    return model.getClosestLandingPoint(analyzer, coordinates)
+
+def minimumJumpsPaths(analyzer, vertexa):
+    """
+    Retorna un recorrido breadth first search sobre
+    el grafo
+    """
+    return model.minimumJumpsPaths(analyzer, vertexa)
+
+def hasJumpsPathTo(analyzer, vertexb):
+    """
+    Retorna si existe un camino de saltos entre el punto de conexión
+    inicial y un punto de conexión destino
+    """
+    return model.hasJumpsPathTo(analyzer, vertexb)
+
+def minimumJumpsPath(analyzer, vertexb):
+    """
+    Retorna el camino con saltos mínimos entre el punto de conexión
+    inicial y un punto de conexión destino
+    """
+    return model.minimumJumpsPath(analyzer, vertexb)
