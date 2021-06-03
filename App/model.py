@@ -22,6 +22,7 @@
 
 import config as cf
 import haversine as hs
+from geoip import geolite2 as geo
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
@@ -31,6 +32,8 @@ from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Algorithms.Graphs import prim as pm
 from DISClib.Algorithms.Graphs import bellmanford as bf
+from DISClib.Algorithms.Graphs import dfs
+from DISClib.Algorithms.Graphs import bfs
 assert cf
 
 """
@@ -54,7 +57,8 @@ def newAnalyzer():
                 'landingpointsbycountry': None,
                 'sccomponents': None,
                 'minimumcostpaths': None,
-                'minimumspanningtrees': None}
+                'minimumspanningtrees': None,
+                'minimumjumpspaths': None}
     
     analyzer['connections'] = gr.newGraph('ADJ_LIST',
                                            False,
@@ -431,7 +435,7 @@ def minimumCostPaths(analyzer, vertexa):
 def hasPathTo(analyzer, vertexb):
     """
     Retorna si existe un camino entre el punto de conexión
-    inicial y un punto de conexión específico
+    inicial y un punto de conexión destino
     """
     paths = analyzer['minimumcostpaths']
     return djk.hasPathTo(paths, vertexb)
@@ -439,7 +443,7 @@ def hasPathTo(analyzer, vertexb):
 def minimumCostPath(analyzer, vertexb):
     """
     Retorna el camino de costo mínimo entre el punto de conexión
-    inicial y un punto de conexión específico
+    inicial y un punto de conexión destino
     """
     paths = analyzer['minimumcostpaths']
     return djk.pathTo(paths, vertexb)
@@ -471,14 +475,14 @@ def minimumSpanningTree(analyzer):
 
 def depthFirstSearch(analyzer):
     """
-    Retorna un recorrido depth first search sobre
+    Retorna un recorrido dfs sobre
     el grafo
     """
     pass
 
 def getConnectedCountries(analyzer, landingpoint):
     """
-    Retorna un árbol tipo 'RBT' de paises conectados a un
+    Retorna un árbol tipo 'RBT' de países conectados a un
     punto de conexión específico
     """
     map = analyzer['connectedlandingpoints']
@@ -492,7 +496,7 @@ def getConnectedCountries(analyzer, landingpoint):
 
 def getCountriesByCable(analyzer, cable):
     """
-    Retorna la lista de paises conectados a un cable
+    Retorna la lista de países conectados a un cable
     específico
     """
     countriesbycable = mp.newMap()
@@ -508,7 +512,7 @@ def getCountriesByCable(analyzer, cable):
 
 def maximumBandwidthByCountry(analyzer, cable):
     """
-    Retorna el maximo ancho de banda de los países conectados
+    Retorna el máximo ancho de banda de los países conectados
     por un cable específico
     """
     bandwidthbycountry = mp.newMap()
@@ -521,12 +525,66 @@ def maximumBandwidthByCountry(analyzer, cable):
         mp.put(bandwidthbycountry, country, maxbandwidth*1000000)
     return bandwidthbycountry
 
+def getCoordinatesByIPAddress(ipaddress):
+    """
+    Retorna las coordenadas geográficas de una
+    dirección IP
+    """
+    geolocation = geo.lookup(ipaddress)
+    coordinates = geolocation.location
+    return coordinates
+
+def getClosestLandingPoint(analyzer, coordinates):
+    """
+    Retorna el punto de conexión más cercano a un punto
+    geográfico específico
+    """
+    map = analyzer['landingpointscoords']
+    lstlandingpoints = mp.keySet(map)
+    closestlandingpoint = None
+    mindistance = 1000000
+    for landingpoint in lt.iterator(lstlandingpoints):
+        originlat = coordinates[0]
+        originlon = coordinates[1]
+        destlat = me.getValue(mp.get(map, landingpoint))[0]
+        destlon = me.getValue(mp.get(map, landingpoint))[1]
+        distance = hs.haversine((originlat, originlon), (destlat, destlon))
+        if mindistance > distance:
+            closestlandingpoint = me.getKey(mp.get(map, landingpoint))
+            mindistance = distance
+    return closestlandingpoint
+
+def minimumJumpsPaths(analyzer, vertexa):
+    """
+    Retorna un recorrido bfs sobre
+    el grafo
+    """
+    graph = analyzer['connections']
+    analyzer['minimumjumpspaths'] = bfs.BreadhtFisrtSearch(graph, vertexa)
+    return analyzer
+
+def hasJumpsPathTo(analyzer, vertexb):
+    """
+    Retorna si existe un camino de saltos entre el punto de conexión
+    inicial y un punto de conexión destino
+    """
+    paths = analyzer['minimumjumpspaths']
+    return bfs.hasPathTo(paths, vertexb)
+
+def minimumJumpsPath(analyzer, vertexb):
+    """
+    Retorna el camino con saltos mínimos entre el punto de conexión
+    inicial y un punto de conexión destino
+    """
+    paths = analyzer['minimumjumpspaths']
+    return bfs.pathTo(paths, vertexb)
+
 # Funciones de comparación
 
 def compareValuesDescOrder(value1, value2):
     """
-    Compara los valores de una característica
-    de dos eventos en orden descendente
+    Compara dos valores en orden
+    descendente
     """
     if (value1 == value2):
         return 0
