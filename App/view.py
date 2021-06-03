@@ -107,11 +107,9 @@ def printMinimumCostPath(analyzer, vertexb):
             "\nDistancia: " + str(connection['weight']) + " km")
             distance += connection['weight']
             index += 1
-        print("\nTotal distancia: " + str(distance) + " km")
-        print()
+        print("\nTotal distancia: " + str(distance) + " km\n")
     else:
-        print("\nNo existe camino entre los puntos de conexión")
-        print()
+        print("\nNo existe camino entre los puntos de conexión\n")
 
 def printConnectedCountries(analyzer, landingpoint):
     """
@@ -144,7 +142,7 @@ def printMaximumBandwidthByCountry(analyzer, countrya, cable):
         if country is not None and country != countrya:
             entry = mp.get(map, country)
             maxbandwidth = me.getValue(entry)
-            print("País: " + str(country) + "   Máximo ancho de banda: " + str(maxbandwidth) +
+            print("País: " + str(country) + "   Máximo ancho de banda: " + str(f"{maxbandwidth:.3f}") +
             " mbps")
     print()
 
