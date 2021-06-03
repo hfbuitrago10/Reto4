@@ -42,7 +42,7 @@ La vista se encarga de la interacción con el usuario
 def printFirstLandingPoint(analyzer):
     """
     Imprime la información del primer punto de conexión
-    cargado
+    cargado al analizador
     """
     map = analyzer['landingpointscoords']
     lstlandingpoints = mp.keySet(map)
@@ -54,7 +54,8 @@ def printFirstLandingPoint(analyzer):
 
 def printLastCountry(analyzer):
     """
-    Imprime la información del último país cargado
+    Imprime la información del último país cargado al
+    analizador
     """
     map = analyzer['countries']
     lstcountries = mp.keySet(map)
@@ -65,15 +66,15 @@ def printLastCountry(analyzer):
 
 def printStronglyConnectedLandingPoints(scvertexs, landingpointnamea, landingpointnameb):
     """
-    Imprime si dos puntos de conexión están fuertemente
-    conectados
+    Imprime si dos puntos de conexión están en el mismo componente
+    fuertemente conectado o no
     """
     if scvertexs == True:
-        print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el mismo" +
-        " cluster? Sí")
+        print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el" +
+        " mismo cluster? Sí")
     else:
-        print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el mismo" +
-        " cluster? No")
+        print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el" +
+        " mismo cluster? No")
 
 def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
     """
@@ -90,8 +91,8 @@ def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
 
 def printMinimumCostPath(analyzer, vertexb):
     """
-    Imprime el camino de costo mínimo entre un punto de conexión
-    inicial y un punto de conexión específico
+    Imprime la ruta de costo mínimo entre un punto de conexión
+    origen y un punto de conexión destino
     """
     haspath = controller.hasPathTo(analyzer, vertexb)
     if haspath == True:
@@ -99,22 +100,22 @@ def printMinimumCostPath(analyzer, vertexb):
         distance = 0
         size = lt.size(minimuncostpath)
         index = 1
-        print("\n---------- Camino de costo mínimo ----------")
+        print("\n---------- Ruta de costo mínimo ----------\n")
         while index <= size:
             connection = lt.getElement(minimuncostpath, index)
-            print("\n---------- Conexión " + str(index) + "----------")
+            print("---------- Conexión " + str(index) + "----------")
             print("Origen: " + str(connection['vertexA']) + "\nDestino: " + str(connection['vertexB']) +
-            "\nDistancia: " + str(connection['weight']) + " km")
+            "\nDistancia: " + str(connection['weight']) + " km\n")
             distance += connection['weight']
             index += 1
-        print("\nTotal distancia: " + str(distance) + " km\n")
+        print("Total distancia: " + str(distance) + " km\n")
     else:
-        print("\nNo existe camino entre los puntos de conexión\n")
+        print("No existe ruta entre los puntos de conexión\n")
 
 def printConnectedCountries(analyzer, landingpoint):
     """
     Imprime los países conectados a un punto de conexión específico
-    en orden descendente de distancia en km
+    en orden descendente por distancia en km
     """
     ordmap = controller.getConnectedCountries(analyzer, landingpoint)
     keys = om.keySet(ordmap)
@@ -145,6 +146,25 @@ def printMaximumBandwidthByCountry(analyzer, countrya, cable):
             print("País: " + str(country) + "   Máximo ancho de banda: " + str(f"{maxbandwidth:.3f}") +
             " mbps")
     print()
+
+def printMinimumJumpsPath(analyzer, vertexb):
+    """
+    Imprime el camino de saltos mínimo entre un punto de conexión
+    origen y un punto de conexión destino
+    """
+    haspath = controller.hasJumpsPathTo(analyzer, vertexb)
+    if haspath == True:
+        minimumjumpspath = controller.minimumJumpsPath(analyzer, vertexb)
+        size = lt.size(minimumjumpspath)
+        index = 1
+        print("\n---------- Ruta de saltos mínima ----------")
+        while index <= size:
+            jump = lt.getElement(minimumjumpspath, index)
+            print(str(index) + ". " + str(jump))
+            index += 1
+        print("\nTotal saltos: " + str(size + 1) + "\n")
+    else:
+        print("\nNo existe ruta entre los puntos de conexión\n")
 
 # Menú de opciones
 
@@ -247,7 +267,17 @@ while True:
         printMaximumBandwidthByCountry(analyzer, countrya, cable)
 
     elif int(inputs[0]) == 9:
-        pass
+        print()
+        ipaddressa = str(input("Ingrese dirección IP: "))
+        ipaddressb = str(input("Ingrese dirección IP: "))
+        coordinatesa = controller.getCoordinatesByIPAddress(ipaddressa)
+        coordinatesb = controller.getCoordinatesByIPAddress(ipaddressb)
+        clstlandingpointa = controller.getClosestLandingPoint(analyzer, coordinatesa)
+        clstlandingpointb = controller.getClosestLandingPoint(analyzer, coordinatesb)
+        vertexa = controller.getVertexByLandingPoint(analyzer, clstlandingpointa)
+        vertexb = controller.getVertexByLandingPoint(analyzer, clstlandingpointb)
+        controller.minimumJumpsPaths(analyzer, vertexa)
+        printMinimumJumpsPath(analyzer, vertexb)
 
     else:
         sys.exit(0)
