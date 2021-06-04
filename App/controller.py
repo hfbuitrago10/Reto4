@@ -134,6 +134,13 @@ def getLandingPointsCoordinates(analyzer, lstlandingpoints):
     """
     return model.getLandingPointsCoordinates(analyzer, lstlandingpoints)
 
+def getVertexCoordinates(analyzer, vertex):
+    """
+    Retorna las coordenadas geográficas de
+    un vértice específico
+    """
+    return model.getVertexCoordinates(analyzer, vertex)
+
 def getAdjacentVertexs(analyzer, vertex):
     """
     Retorna una lista con los vértices adyacentes a
@@ -161,6 +168,13 @@ def stronglyConnectedVertexs(analyzer, vertexa, vertexb):
     conectados o no
     """
     return model.stronglyConnectedVertexs(analyzer, vertexa, vertexb)
+
+def getStronglyConnectedComponent(analyzer, component):
+    """
+    Retorna la lista de vértices de un componente
+    fuertemente conectado
+    """
+    return model.getStronglyConnectedComponent(analyzer, component)
 
 def mostConnectedLandingPoint(analyzer):
     """
