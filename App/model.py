@@ -247,30 +247,37 @@ def addLandingPointsByCountry(analyzer, country):
 
 def addCapitalLandingPoints(analyzer, country):
     """
-    Adiciona los puntos de conexión de la capital de un país como
-    vértices del grafo, además crea un arco entre cada vértice
-    capital y los puntos de conexión de ese país
+    Adiciona el punto de conexión de la capital de un país como vértice del
+    grafo, adicionalmente crea un arco entre el vértice capital y
+    los puntos de conexión de su país
     """
     countries = analyzer['landingpointsbycountry']
+    coords = analyzer['landingpointscoords']
     name = country['CountryName']
     lstlandingpoints = me.getValue(mp.get(countries, str(name)))
-    for landingpoint in lt.iterator(lstlandingpoints):
-        cables = analyzer['cablesbylandingpoint']
-        lstcables = me.getValue(mp.get(cables, landingpoint))
-        for cable in lt.iterator(lstcables):
-            coords = analyzer['landingpointscoords']
-            origin = str(country['CapitalName']) + '-' + cable
-            destination = landingpoint + '-' + cable
-            originlat = float(country['CapitalLatitude'])
-            originlon = float(country['CapitalLongitude'])
-            origincoords = originlat, originlon
-            destlat = me.getValue(mp.get(coords, landingpoint))[0]
-            destlon = me.getValue(mp.get(coords, landingpoint))[1]
-            distance = hs.haversine((originlat, originlon), (destlat, destlon))
-            if lt.isEmpty(lstcables) == False:
+    origin = str(country['CapitalName']) + '-' + name
+    originlat = float(country['CapitalLatitude'])
+    originlon = float(country['CapitalLongitude'])
+    origincoords = originlat, originlon
+    if lt.isEmpty(lstlandingpoints) == False:
+        for landingpoint in lt.iterator(lstlandingpoints):
+            cables = analyzer['cablesbylandingpoint']
+            lstcables = me.getValue(mp.get(cables, landingpoint))
+            for cable in lt.iterator(lstcables):
+                destination = landingpoint + '-' + cable
+                destlat = me.getValue(mp.get(coords, landingpoint))[0]
+                destlon = me.getValue(mp.get(coords, landingpoint))[1]
+                distance = hs.haversine((originlat, originlon), (destlat, destlon))
                 addLandingPoint(analyzer, origin)
                 addCapitalVertexsCoords(analyzer, origin, origincoords)
                 addConnection(analyzer, origin, destination, distance)
+    else:
+        closestlandingpoint = getClosestLandingPoint(analyzer, origincoords)[0]
+        destination = getVertexByLandingPoint(analyzer, closestlandingpoint)
+        distance = getClosestLandingPoint(analyzer, origincoords)[1]
+        addLandingPoint(analyzer, origin)
+        addCapitalVertexsCoords(analyzer, origin, origincoords)
+        addConnection(analyzer, origin, destination, distance)
 
 def addVertexsCoords(analyzer, vertex):
     """
@@ -373,17 +380,11 @@ def getCapitalByCountry(analyzer, country):
 
 def getCapitalVertexByCountry(analyzer, country):
     """
-    Retorna un vértice del punto de conexión de la capital
+    Retorna el vértice del punto de conexión de la capital
     de un país específico
     """
-    map = analyzer['landingpointsbycountry']
-    lstlandingpoints = me.getValue(mp.get(map, country))
-    landingpoint = lt.firstElement(lstlandingpoints)
-    cables = analyzer['cablesbylandingpoint']
-    lstcables = me.getValue(mp.get(cables, landingpoint))
-    cable = lt.firstElement(lstcables)
     capital = getCapitalByCountry(analyzer, country)
-    vertex = capital + '-' + cable
+    vertex = capital + '-' + country
     return vertex
 
 def getHarvesineDistance(analyzer, origin, destination):
@@ -414,6 +415,17 @@ def getLandingPointsByCountry(analyzer, country):
             lt.addLast(lstlandingsbycountry, landingpoint)
     return lstlandingsbycountry
 
+def getLandingPointCoordinates(analyzer, landingpoint):
+    """
+    Retorna las coordenadas geográficas de un punto
+    de conexión específico
+    """
+    map = analyzer['landingpointscoords']
+    latitude = me.getValue(mp.get(map, landingpoint))[0]
+    longitude = me.getValue(mp.get(map, landingpoint))[1]
+    coordinates = latitude, longitude
+    return coordinates
+
 def getLandingPointsCoordinates(analyzer, lstlandingpoints):
     """
     Retorna una lista con las coordenadas geográficas de cada
@@ -425,6 +437,27 @@ def getLandingPointsCoordinates(analyzer, lstlandingpoints):
         latitude = me.getValue(mp.get(map, landingpoint))[0]
         longitude = me.getValue(mp.get(map, landingpoint))[1]
         lt.addLast(lstcoordinates, (latitude, longitude))
+    return lstcoordinates
+
+def getAdjacentVertexs(analyzer, vertex):
+    """
+    Retorna una lista con los vértices adyacentes a
+    un vértice específico
+    """
+    graph = analyzer['connections']
+    lstadjacents = gr.adjacents(graph, vertex)
+    return lstadjacents
+
+def getVertexsCoordinates(analyzer, lstadjacents):
+    """
+    Retorna una lista con las coordenadas geográficas de
+    cada vértice de una lista
+    """
+    map = analyzer['vertexscoords']
+    lstcoordinates = lt.newList('ARRAY_LIST')
+    for vertex in lt.iterator(lstadjacents):
+        coordinates = me.getValue(mp.get(map, vertex))
+        lt.addLast(lstcoordinates, coordinates)
     return lstcoordinates
 
 def stronglyConnectedComponents(analyzer):
@@ -446,35 +479,17 @@ def stronglyConnectedVertexs(analyzer, vertexa, vertexb):
 
 def mostConnectedLandingPoint(analyzer):
     """
-    Retorna el punto de conexión con mayor número de
-    cables conectados
-    """
-    map = analyzer['cablesbylandingpoint']
-    lstlandingpoints = mp.keySet(map)
-    maxlandingpoint = None
-    maxconnections = 0
-    for landingpoint in lt.iterator(lstlandingpoints):
-        entry = mp.get(map, landingpoint)
-        lstcables = me.getValue(entry)
-        connections = lt.size(lstcables)
-        if connections > maxconnections:
-            maxlandingpoint = landingpoint
-            maxconnections = connections
-    return maxlandingpoint, maxconnections
-
-def mostConnectedCapitalLandingPoint(analyzer):
-    """
     Retorna un árbol tipo 'RBT' con los puntos de conexión
-    capitales por número de conexiones
+    con mayor número de conexiones
     """
-    map = analyzer['landingpointsbycountry']
-    ordmap = om.newMap('RBT', compareValues)
-    lstcountries = mp.keySet(map)
-    for country in lt.iterator(lstcountries):
-        capital = getCapitalByCountry(analyzer, country)
-        lstcables = me.getValue(mp.get(map, country))
-        connections = lt.size(lstcables)
-        om.put(ordmap, connections, (capital, country))
+    graph = analyzer['connections']
+    map = analyzer['vertexscoords']
+    ordmap = om.newMap('RBT', compareValuesDescOrder)
+    lstvertexs = mp.keySet(map)
+    for vertex in lt.iterator(lstvertexs):
+        lstconnections = gr.adjacents(graph, vertex)
+        connections = lt.size(lstconnections)
+        om.put(ordmap, connections, vertex)
     return ordmap
 
 def minimumCostPaths(analyzer, vertexa):
@@ -569,6 +584,15 @@ def getConnectedCountries(analyzer, landingpoint):
         om.put(ordmap, distance, country)
     return ordmap
 
+def getConnectedLandingPoints(analyzer, landingpoint):
+    """
+    Retorna una lista de los puntos de conexión conectados a
+    un punto de conexión específico
+    """
+    map = analyzer['connectedlandingpoints']
+    lstlandingpoints = me.getValue(mp.get(map, landingpoint))
+    return lstlandingpoints
+
 def getCountriesByCable(analyzer, cable):
     """
     Retorna la lista de países conectados a un cable
@@ -627,7 +651,7 @@ def getClosestLandingPoint(analyzer, coordinates):
         if mindistance > distance:
             closestlandingpoint = me.getKey(mp.get(map, landingpoint))
             mindistance = distance
-    return closestlandingpoint
+    return closestlandingpoint, mindistance
 
 def minimumJumpsPaths(analyzer, vertexa):
     """
