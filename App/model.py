@@ -439,6 +439,15 @@ def getLandingPointsCoordinates(analyzer, lstlandingpoints):
         lt.addLast(lstcoordinates, (latitude, longitude))
     return lstcoordinates
 
+def getVertexCoordinates(analyzer, vertex):
+    """
+    Retorna las coordenadas geográficas de
+    un vértice específico
+    """
+    map = analyzer['vertexscoords']
+    coordinates = me.getValue(mp.get(map, vertex))
+    return coordinates
+
 def getAdjacentVertexs(analyzer, vertex):
     """
     Retorna una lista con los vértices adyacentes a
@@ -476,6 +485,20 @@ def stronglyConnectedVertexs(analyzer, vertexa, vertexb):
     """
     sccomponents = analyzer['sccomponents']
     return scc.stronglyConnected(sccomponents, vertexa, vertexb)
+
+def getStronglyConnectedComponent(analyzer, component):
+    """
+    Retorna la lista de vértices de un componente
+    fuertemente conectado
+    """
+    sscomponents = analyzer['sccomponents']['idscc']
+    lstvertexs = mp.keySet(sscomponents)
+    lstvertexsbycomponent = lt.newList('ARRAY_LIST')
+    for vertex in lt.iterator(lstvertexs):
+        value = me.getValue(mp.get(sscomponents, vertex))
+        if value == component:
+            lt.addLast(lstvertexsbycomponent, vertex)
+    return lstvertexsbycomponent
 
 def mostConnectedLandingPoint(analyzer):
     """
