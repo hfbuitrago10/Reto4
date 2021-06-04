@@ -22,6 +22,7 @@
 
 import config as cf
 import sys
+import folium
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -89,6 +90,18 @@ def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
     "  Identificador: " + str(landingpoint))
     print("Total cables conectados: " + str(cables) + "\n")
 
+def printMostConnectedCapitalLandingPoint(analyzer):
+    """
+    Imprime el punto de conexión de capital con mayor número
+    de cables conectados
+    """
+    ordmap = controller.mostConnectedCapitalLandingPoint(analyzer)
+    key = om.maxKey(ordmap)
+    value = me.getValue(om.get(ordmap, key))
+    print("---------- Punto de conexión capital crítico ----------")
+    print("Nombre: " + str(value[0]) + "  País: " + str(value[1]))
+    print("Total cables conectados: " + str(key) + "\n")
+
 def printMinimumCostPath(analyzer, vertexb):
     """
     Imprime la ruta de costo mínimo entre un punto de conexión
@@ -149,7 +162,7 @@ def printMaximumBandwidthByCountry(analyzer, countrya, cable):
 
 def printMinimumJumpsPath(analyzer, vertexb):
     """
-    Imprime el camino de saltos mínimo entre un punto de conexión
+    Imprime la ruta de saltos mínima entre un punto de conexión
     origen y un punto de conexión destino
     """
     haspath = controller.hasJumpsPathTo(analyzer, vertexb)
@@ -165,6 +178,17 @@ def printMinimumJumpsPath(analyzer, vertexb):
         print("\nTotal saltos: " + str(size + 1) + "\n")
     else:
         print("\nNo existe ruta entre los puntos de conexión\n")
+
+# Funciones para la creación de mapas
+
+def plotMinimumCostPathMap(analyzer, vertexb):
+    """
+    Crea un mapa de la ruta de costo mínimo entre dos
+    puntos de conexión
+    """
+    lstvertexs = controller.getMinimumCostPathVertexs(analyzer, vertexb)
+    lstcoordinates = controller.getPathCoordinates(analyzer, lstvertexs)
+    pass
 
 # Menú de opciones
 
@@ -237,6 +261,7 @@ while True:
         landingpoint = controller.mostConnectedLandingPoint(analyzer)[0]
         cables = controller.mostConnectedLandingPoint(analyzer)[1]
         printMostConnectedLandingPoint(analyzer, landingpoint, cables)
+        printMostConnectedCapitalLandingPoint(analyzer)
 
     elif int(inputs[0]) == 5:
         print()
@@ -246,6 +271,7 @@ while True:
         vertexb = controller.getCapitalVertexByCountry(analyzer, countryb)
         controller.minimumCostPaths(analyzer, vertexa)
         printMinimumCostPath(analyzer, vertexb)
+        plotMinimumCostPathMap(analyzer, vertexb)
 
     elif int(inputs[0]) == 6:
         controller.minimumSpanningTrees(analyzer)
