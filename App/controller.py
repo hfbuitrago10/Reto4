@@ -120,12 +120,33 @@ def getLandingPointsByCountry(analyzer, country):
     """
     return model.getLandingPointsByCountry(analyzer, country)
 
+def getLandingPointCoordinates(analyzer, landingpoint):
+    """
+    Retorna las coordenadas geográficas de un punto
+    de conexión específico
+    """
+    return model.getLandingPointCoordinates(analyzer, landingpoint)
+
 def getLandingPointsCoordinates(analyzer, lstlandingpoints):
     """
     Retorna una lista con las coordenadas geográficas de cada
     punto de conexión de una lista
     """
     return model.getLandingPointsCoordinates(analyzer, lstlandingpoints)
+
+def getAdjacentVertexs(analyzer, vertex):
+    """
+    Retorna una lista con los vértices adyacentes a
+    un vértice específico
+    """
+    return model.getAdjacentVertexs(analyzer, vertex)
+
+def getVertexsCoordinates(analyzer, lstadjacents):
+    """
+    Retorna una lista con las coordenadas geográficas de
+    cada vértice de una lista
+    """
+    return model.getVertexsCoordinates(analyzer, lstadjacents)
 
 def stronglyConnectedComponents(analyzer):
     """
@@ -143,17 +164,10 @@ def stronglyConnectedVertexs(analyzer, vertexa, vertexb):
 
 def mostConnectedLandingPoint(analyzer):
     """
-    Retorna el punto de conexión con mayor número de
-    cables conectados
+    Retorna un árbol tipo 'RBT' con los puntos de conexión
+    con mayor número de conexiones
     """
     return model.mostConnectedLandingPoint(analyzer)
-
-def mostConnectedCapitalLandingPoint(analyzer):
-    """
-    Retorna un árbol tipo 'RBT' con los puntos de conexión
-    capitales por número de conexiones
-    """
-    return model.mostConnectedCapitalLandingPoint(analyzer)
 
 def minimumCostPaths(analyzer, vertexa):
     """
@@ -204,6 +218,13 @@ def getConnectedCountries(analyzer, landingpoint):
     """
     return model.getConnectedCountries(analyzer, landingpoint)
 
+def getConnectedLandingPoints(analyzer, landingpoint):
+    """
+    Retorna una lista de los puntos de conexión conectados a
+    un punto de conexión específico
+    """
+    return model.getConnectedLandingPoints(analyzer, landingpoint)
+
 def getCountriesByCable(analyzer, cable):
     """
     Retorna la lista de paises conectados a un cable
@@ -214,7 +235,7 @@ def getCountriesByCable(analyzer, cable):
 def maximumBandwidthByCountry(analyzer, cable):
     """
     Retorna el máximo ancho de banda de los países conectados
-    por un cable específico en mbps
+    por un cable específico
     """
     return model.maximumBandwidthByCountry(analyzer, cable)
 
