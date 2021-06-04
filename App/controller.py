@@ -113,6 +113,20 @@ def getCapitalVertexByCountry(analyzer, country):
     """
     return model.getCapitalVertexByCountry(analyzer, country)
 
+def getLandingPointsByCountry(analyzer, country):
+    """
+    Retorna una lista con los puntos de conexión de un país
+    específico
+    """
+    return model.getLandingPointsByCountry(analyzer, country)
+
+def getLandingPointsCoordinates(analyzer, lstlandingpoints):
+    """
+    Retorna una lista con las coordenadas geográficas de cada
+    punto de conexión de una lista
+    """
+    return model.getLandingPointsCoordinates(analyzer, lstlandingpoints)
+
 def stronglyConnectedComponents(analyzer):
     """
     Retorna el número de componentes fuertemente conectados

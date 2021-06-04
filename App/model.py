@@ -414,6 +414,19 @@ def getLandingPointsByCountry(analyzer, country):
             lt.addLast(lstlandingsbycountry, landingpoint)
     return lstlandingsbycountry
 
+def getLandingPointsCoordinates(analyzer, lstlandingpoints):
+    """
+    Retorna una lista con las coordenadas geográficas de cada
+    punto de conexión de una lista
+    """
+    map = analyzer['landingpointscoords']
+    lstcoordinates = lt.newList('ARRAY_LIST')
+    for landingpoint in lt.iterator(lstlandingpoints):
+        latitude = me.getValue(mp.get(map, landingpoint))[0]
+        longitude = me.getValue(mp.get(map, landingpoint))[1]
+        lt.addLast(lstcoordinates, (latitude, longitude))
+    return lstcoordinates
+
 def stronglyConnectedComponents(analyzer):
     """
     Retorna el número de componentes fuertemente

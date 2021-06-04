@@ -181,6 +181,18 @@ def printMinimumJumpsPath(analyzer, vertexb):
 
 # Funciones para la creación de mapas
 
+def plotMostConnectedLandingPoint(analyzer):
+    """
+    Crea un mapa del punto de conexión con mayor número
+    de cables conectados
+    """
+    ordmap = controller.mostConnectedCapitalLandingPoint(analyzer)
+    key = om.maxKey(ordmap)
+    value = me.getValue(om.get(ordmap, key))
+    lstlandingpoints = controller.getLandingPointsByCountry(analyzer, value[1])
+    lstcoordinates = controller.getLandingPointsCoordinates(analyzer, lstlandingpoints)
+    pass
+
 def plotMinimumCostPathMap(analyzer, vertexb):
     """
     Crea un mapa de la ruta de costo mínimo entre dos
@@ -262,6 +274,7 @@ while True:
         cables = controller.mostConnectedLandingPoint(analyzer)[1]
         printMostConnectedLandingPoint(analyzer, landingpoint, cables)
         printMostConnectedCapitalLandingPoint(analyzer)
+        plotMostConnectedLandingPoint(analyzer)
 
     elif int(inputs[0]) == 5:
         print()
