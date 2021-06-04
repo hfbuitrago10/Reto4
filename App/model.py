@@ -55,6 +55,7 @@ def newAnalyzer():
                 'landingpointsnames': None,
                 'countries': None,
                 'landingpointsbycountry': None,
+                'vertexscoords': None,
                 'sccomponents': None,
                 'minimumcostpaths': None,
                 'minimumspanningtrees': None,
@@ -72,6 +73,7 @@ def newAnalyzer():
     analyzer['landingpointsnames'] = mp.newMap()
     analyzer['countries'] = mp.newMap()
     analyzer['landingpointsbycountry'] = mp.newMap()
+    analyzer['vertexscoords'] = mp.newMap()
 
     return analyzer
 
@@ -87,7 +89,9 @@ def addLandingPointConnection(analyzer, connection):
     destination = vertexDestination(connection)
     distance = haversineDistance(analyzer, connection)
     addLandingPoint(analyzer, origin)
+    addVertexsCoords(analyzer, origin)
     addLandingPoint(analyzer, destination)
+    addVertexsCoords(analyzer, destination)
     addConnection(analyzer, origin, destination, distance)
     addCablesByLandingPoint(analyzer, connection, 'origin')
     addCablesByLandingPoint(analyzer, connection, 'destination')
@@ -259,12 +263,34 @@ def addCapitalLandingPoints(analyzer, country):
             destination = landingpoint + '-' + cable
             originlat = float(country['CapitalLatitude'])
             originlon = float(country['CapitalLongitude'])
+            origincoords = originlat, originlon
             destlat = me.getValue(mp.get(coords, landingpoint))[0]
             destlon = me.getValue(mp.get(coords, landingpoint))[1]
             distance = hs.haversine((originlat, originlon), (destlat, destlon))
             if lt.isEmpty(lstcables) == False:
                 addLandingPoint(analyzer, origin)
+                addCapitalVertexsCoords(analyzer, origin, origincoords)
                 addConnection(analyzer, origin, destination, distance)
+
+def addVertexsCoords(analyzer, vertex):
+    """
+    Adiciona las coordenadas geográficas de un
+    vértice del gráfo
+    """
+    map = analyzer['vertexscoords']
+    coords = analyzer['landingpointscoords']
+    landingpoint = vertex.split('-')[0]
+    latitude = me.getValue(mp.get(coords, landingpoint))[0]
+    longitude = me.getValue(mp.get(coords, landingpoint))[1]
+    mp.put(map, vertex, (latitude, longitude))
+
+def addCapitalVertexsCoords(analyzer, vertex, coordinates):
+    """
+    Adiciona las coordenadas geográficas de un
+    vértice capital del grafo
+    """
+    map = analyzer['vertexscoords']
+    mp.put(map, vertex, coordinates)
 
 # Funciones para creación de datos
 
@@ -423,9 +449,29 @@ def mostConnectedLandingPoint(analyzer):
             maxconnections = connections
     return maxlandingpoint, maxconnections
 
+def mostConnectedCapitalLandingPoint(analyzer):
+    """
+    Retorna un árbol tipo 'RBT' con los puntos de conexión de
+    capitales por número de conexiones
+    """
+    graph = analyzer['connections']
+    ordmap = om.newMap('RBT', compareValues)
+    lstvertexs = gr.vertices(graph)
+    lstcountries = mp.keySet(analyzer['countries'])
+    for country in lt.iterator(lstcountries):
+        capital = getCapitalByCountry(analyzer, country)
+        connections = 0
+        value = capital, country
+        for vertex in lt.iterator(lstvertexs):
+            if capital in vertex:
+                connections += 1
+        if capital != '':
+            om.put(ordmap, connections, value)
+    return ordmap
+
 def minimumCostPaths(analyzer, vertexa):
     """
-    Retorna los caminos de costo mínimo desde un punto de conexión
+    Retorna las rutas de costo mínimo desde un punto de conexión
     inicial a todos los demás puntos de conexión
     """
     graph = analyzer['connections']
@@ -434,7 +480,7 @@ def minimumCostPaths(analyzer, vertexa):
 
 def hasPathTo(analyzer, vertexb):
     """
-    Retorna si existe un camino entre el punto de conexión
+    Retorna si existe una ruta entre el punto de conexión
     inicial y un punto de conexión destino
     """
     paths = analyzer['minimumcostpaths']
@@ -442,11 +488,32 @@ def hasPathTo(analyzer, vertexb):
 
 def minimumCostPath(analyzer, vertexb):
     """
-    Retorna el camino de costo mínimo entre el punto de conexión
+    Retorna la ruta de costo mínimo entre el punto de conexión
     inicial y un punto de conexión destino
     """
     paths = analyzer['minimumcostpaths']
     return djk.pathTo(paths, vertexb)
+
+def getMinimumCostPathVertexs(analyzer, vertexb):
+    """
+    Retorna una lista con los vértices de la ruta de costo
+    mínimo entre dos puntos de conexión
+    """
+    map = analyzer['vertexscoords']
+    lstvertexs = lt.newList('ARRAY_LIST')
+    haspath = hasPathTo(analyzer, vertexb)
+    if haspath == True:
+        minimuncostpath = minimumCostPath(analyzer, vertexb)
+        size = lt.size(minimuncostpath)
+        index = 1
+        while index <= size:
+            connection = lt.getElement(minimuncostpath, index)
+            vertex = connection['vertexA']
+            if not lt.isPresent(lstvertexs, vertex):
+                lt.addLast(lstvertexs, vertex)
+            index += 1
+        lt.addLast(lstvertexs, vertexb)
+    return lstvertexs
 
 def minimumSpanningTrees(analyzer):
     """
@@ -579,7 +646,31 @@ def minimumJumpsPath(analyzer, vertexb):
     paths = analyzer['minimumjumpspaths']
     return bfs.pathTo(paths, vertexb)
 
+def getPathCoordinates(analyzer, lstvertexs):
+    """
+    Retorna una lista con las coordenadas geográficas de cada
+    vértice de una ruta
+    """
+    map = analyzer['vertexscoords']
+    lstcoordinates = lt.newList('ARRAY_LIST')
+    for vertex in lt.iterator(lstvertexs):
+        coordinates = me.getValue(mp.get(map, vertex))
+        lt.addLast(lstcoordinates, coordinates)
+    return lstcoordinates
+
 # Funciones de comparación
+
+def compareValues(value1, value2):
+    """
+    Compara dos valores en orden
+    ascendente
+    """
+    if (value1 == value2):
+        return 0
+    elif (value1 > value2):
+        return 1
+    else:
+        return -1
 
 def compareValuesDescOrder(value1, value2):
     """
