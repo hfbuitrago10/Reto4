@@ -183,6 +183,24 @@ def printMinimumJumpsPath(analyzer, vertexb):
 
 # Funciones para la creación de mapas
 
+def plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, namea, nameb):
+    """
+    Crea un mapa html de los componentes fuertemente
+    conectados del grafo
+    """
+    vertexacoords = controller.getVertexCoordinates(analyzer, vertexa)
+    vertexbcoords = controller.getVertexCoordinates(analyzer, vertexb)
+    lstcomponenta = controller.getStronglyConnectedComponent(analyzer, 1)
+    lstcomponentb = controller.getStronglyConnectedComponent(analyzer, 2)
+    lstcoordinatesa = controller.getVertexsCoordinates(analyzer, lstcomponenta)
+    lstcoordinatesb = controller.getVertexsCoordinates(analyzer, lstcomponentb)
+    map = folium.Map()
+    folium.PolyLine(lstcoordinatesa['elements'], color="green", weight=2.5, opacity=0.35).add_to(map)
+    folium.PolyLine(lstcoordinatesb['elements'], color="blue", weight=2.5, opacity=0.35).add_to(map)
+    folium.Marker(vertexacoords, str(namea)).add_to(map)
+    folium.Marker(vertexbcoords, str(nameb)).add_to(map)
+    map.save("map1.html")
+
 def plotMostConnectedLandingPointMap(analyzer):
     """
     Crea un mapa html del punto de conexión con mayor número
@@ -200,7 +218,7 @@ def plotMostConnectedLandingPointMap(analyzer):
     folium.Marker(vertexcoords, str(city)).add_to(map)
     for location in lt.iterator(lstcoordinates):
         folium.Marker(location).add_to(map)
-        folium.PolyLine([vertexcoords, location], color="blue", weight=2.5, opacity=0.5).add_to(map)
+        folium.PolyLine([vertexcoords, location], color="blue", weight=2.5, opacity=0.35).add_to(map)
     map.save("map2.html")
 
 def plotMinimumCostPathMap(analyzer, vertexb):
@@ -213,7 +231,7 @@ def plotMinimumCostPathMap(analyzer, vertexb):
     map = folium.Map()
     for location in lt.iterator(lstcoordinates):
         folium.Marker(location).add_to(map)
-        folium.PolyLine(lstcoordinates['elements'], color="blue", weight=2.5, opacity=0.25).add_to(map)
+        folium.PolyLine(lstcoordinates['elements'], color="blue", weight=2.5, opacity=0.35).add_to(map)
     map.save("map3.html")
 
 def plotConnectedCountriesMap(analyzer, landingpoint, landingpointname):
@@ -228,7 +246,7 @@ def plotConnectedCountriesMap(analyzer, landingpoint, landingpointname):
     folium.Marker(origincoords, str(landingpointname)).add_to(map)
     for location in lt.iterator(lstcoordinates):
         folium.Marker(location).add_to(map)
-        folium.PolyLine([origincoords, location], color="blue", weight=2.5, opacity=0.5).add_to(map)
+        folium.PolyLine([origincoords, location], color="blue", weight=2.5, opacity=0.35).add_to(map)
     map.save("map5.html")
 
 # Menú de opciones
@@ -296,6 +314,7 @@ while True:
         print("\n---------- Clusters de conexión ----------")
         printStronglyConnectedLandingPoints(scvertexs, landingpointnamea, landingpointnameb)
         print("Total clusters: " + str(sccomponents) + "\n")
+        plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, landingpointnamea, landingpointnameb)
 
     elif int(inputs[0]) == 4:
         print()
