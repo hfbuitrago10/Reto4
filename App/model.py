@@ -467,19 +467,14 @@ def mostConnectedCapitalLandingPoint(analyzer):
     Retorna un árbol tipo 'RBT' con los puntos de conexión
     capitales por número de conexiones
     """
-    graph = analyzer['connections']
+    map = analyzer['landingpointsbycountry']
     ordmap = om.newMap('RBT', compareValues)
-    lstvertexs = gr.vertices(graph)
-    lstcountries = mp.keySet(analyzer['countries'])
+    lstcountries = mp.keySet(map)
     for country in lt.iterator(lstcountries):
         capital = getCapitalByCountry(analyzer, country)
-        connections = 0
-        value = capital, country
-        for vertex in lt.iterator(lstvertexs):
-            if capital in vertex:
-                connections += 1
-        if capital != '':
-            om.put(ordmap, connections, value)
+        lstcables = me.getValue(mp.get(map, country))
+        connections = lt.size(lstcables)
+        om.put(ordmap, connections, (capital, country))
     return ordmap
 
 def minimumCostPaths(analyzer, vertexa):
@@ -593,7 +588,7 @@ def getCountriesByCable(analyzer, cable):
 def maximumBandwidthByCountry(analyzer, cable):
     """
     Retorna el máximo ancho de banda de los países conectados
-    por un cable específico
+    por un cable específico en mbps
     """
     bandwidthbycountry = mp.newMap()
     map = analyzer['bandwidthbycable']
@@ -645,15 +640,15 @@ def minimumJumpsPaths(analyzer, vertexa):
 
 def hasJumpsPathTo(analyzer, vertexb):
     """
-    Retorna si existe un camino de saltos entre el punto de conexión
-    inicial y un punto de conexión destino
+    Retorna si existe una ruta de saltos mínima entre el punto de
+    conexión inicial y un punto de conexión destino
     """
     paths = analyzer['minimumjumpspaths']
     return bfs.hasPathTo(paths, vertexb)
 
 def minimumJumpsPath(analyzer, vertexb):
     """
-    Retorna el camino con saltos mínimos entre el punto de conexión
+    Retorna la ruta de saltos mínima entre el punto de conexión
     inicial y un punto de conexión destino
     """
     paths = analyzer['minimumjumpspaths']
@@ -662,7 +657,7 @@ def minimumJumpsPath(analyzer, vertexb):
 def getPathCoordinates(analyzer, lstvertexs):
     """
     Retorna una lista con las coordenadas geográficas de cada
-    vértice de una ruta
+    vértice de una ruta de vértices
     """
     map = analyzer['vertexscoords']
     lstcoordinates = lt.newList('ARRAY_LIST')

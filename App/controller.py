@@ -214,7 +214,7 @@ def getCountriesByCable(analyzer, cable):
 def maximumBandwidthByCountry(analyzer, cable):
     """
     Retorna el máximo ancho de banda de los países conectados
-    por un cable específico
+    por un cable específico en mbps
     """
     return model.maximumBandwidthByCountry(analyzer, cable)
 
@@ -234,21 +234,21 @@ def getClosestLandingPoint(analyzer, coordinates):
 
 def minimumJumpsPaths(analyzer, vertexa):
     """
-    Retorna un recorrido breadth first search sobre
+    Retorna un recorrido bfs sobre
     el grafo
     """
     return model.minimumJumpsPaths(analyzer, vertexa)
 
 def hasJumpsPathTo(analyzer, vertexb):
     """
-    Retorna si existe un camino de saltos entre el punto de conexión
-    inicial y un punto de conexión destino
+    Retorna si existe una ruta de saltos mínima entre el punto de
+    conexión inicial y un punto de conexión destino
     """
     return model.hasJumpsPathTo(analyzer, vertexb)
 
 def minimumJumpsPath(analyzer, vertexb):
     """
-    Retorna el camino con saltos mínimos entre el punto de conexión
+    Retorna la ruta de saltos mínima entre el punto de conexión
     inicial y un punto de conexión destino
     """
     return model.minimumJumpsPath(analyzer, vertexb)
@@ -256,6 +256,6 @@ def minimumJumpsPath(analyzer, vertexb):
 def getPathCoordinates(analyzer, lstvertexs):
     """
     Retorna una lista con las coordenadas geográficas de cada
-    vértice de una ruta
+    vértice de una ruta de vértices
     """
     return model.getPathCoordinates(analyzer, lstvertexs)
