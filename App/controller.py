@@ -136,7 +136,7 @@ def mostConnectedLandingPoint(analyzer):
 
 def mostConnectedCapitalLandingPoint(analyzer):
     """
-    Retorna un árbol tipo 'RBT' con los puntos de conexión de
+    Retorna un árbol tipo 'RBT' con los puntos de conexión
     capitales por número de conexiones
     """
     return model.mostConnectedCapitalLandingPoint(analyzer)

@@ -92,7 +92,7 @@ def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
 
 def printMostConnectedCapitalLandingPoint(analyzer):
     """
-    Imprime el punto de conexión de capital con mayor número
+    Imprime el punto de conexión capital con mayor número
     de cables conectados
     """
     ordmap = controller.mostConnectedCapitalLandingPoint(analyzer)
