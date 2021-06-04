@@ -77,30 +77,25 @@ def printStronglyConnectedLandingPoints(scvertexs, landingpointnamea, landingpoi
         print("Los puntos " + str(landingpointnamea) + " y " + str(landingpointnameb) + " están en el" +
         " mismo cluster? No")
 
-def printMostConnectedLandingPoint(analyzer, landingpoint, cables):
+def printMostConnectedLandingPoint(analyzer):
     """
-    Imprime el punto de conexión con mayor número de cables
-    conectados
+    Imprime el punto de conexión con mayor número de
+    conexiones
     """
-    map = analyzer['landingpointscoords']
-    key = landingpoint
-    value = me.getValue(mp.get(map, key))
-    print("---------- Punto de conexión crítico ----------")
-    print("Nombre: " + str(value[2].split(', ')[0]) + "  País: " + str(value[2].split(', ')[1]) +
-    "  Identificador: " + str(landingpoint))
-    print("Total cables conectados: " + str(cables) + "\n")
-
-def printMostConnectedCapitalLandingPoint(analyzer):
-    """
-    Imprime el punto de conexión capital con mayor número
-    de cables conectados
-    """
-    ordmap = controller.mostConnectedCapitalLandingPoint(analyzer)
-    key = om.maxKey(ordmap)
-    value = me.getValue(om.get(ordmap, key))
-    print("---------- Punto de conexión capital crítico ----------")
-    print("Nombre: " + str(value[0]) + "  País: " + str(value[1]))
-    print("Total cables conectados: " + str(key) + "\n")
+    ordmap = controller.mostConnectedLandingPoint(analyzer)
+    keys = om.keySet(ordmap)
+    index = 1
+    print("---------- Puntos de conexión críticos ----------")
+    while index <= 5:
+        key = lt.getElement(keys, index)
+        value = me.getValue(om.get(ordmap, key))
+        name = value.split('-')[0]
+        country = value.split('-')[1]
+        print(str(index) + ". Nombre: " + str(name) + "  País: " + str(country) + "  Identificador: " +
+        str(value))
+        print("   Total cables conectados: " + str(key))
+        index += 1
+    print()
 
 def printMinimumCostPath(analyzer, vertexb):
     """
@@ -131,18 +126,25 @@ def printConnectedCountries(analyzer, landingpoint):
     en orden descendente por distancia en km
     """
     ordmap = controller.getConnectedCountries(analyzer, landingpoint)
+    lstcountries = lt.newList('ARRAY_LIST')
     keys = om.keySet(ordmap)
     values = om.valueSet(ordmap)
     size = om.size(ordmap)
     index = 1
+    count = 1
     print("\n---------- Países afectados ----------")
     while index <= size:
         country = lt.getElement(values, index)
         distance = lt.getElement(keys, index)
-        print(str(index) + ". " + str(country) + "  Distancia: " + str(distance) + " km")
-        index += 1
+        if not lt.isPresent(lstcountries, country):
+            print(str(count) + ". " + str(country) + "  Distancia: " + str(distance) + " km")
+            lt.addLast(lstcountries, country)
+            index += 1
+            count += 1
+        else:
+            index += 1
     print()
-    print("Total países afectados: " + str(size) + "\n")
+    print("Total países afectados: " + str(lt.size(lstcountries)) + "\n")
 
 def printMaximumBandwidthByCountry(analyzer, countrya, cable):
     """
@@ -181,26 +183,53 @@ def printMinimumJumpsPath(analyzer, vertexb):
 
 # Funciones para la creación de mapas
 
-def plotMostConnectedLandingPoint(analyzer):
+def plotMostConnectedLandingPointMap(analyzer):
     """
-    Crea un mapa del punto de conexión con mayor número
+    Crea un mapa html del punto de conexión con mayor número
     de cables conectados
     """
-    ordmap = controller.mostConnectedCapitalLandingPoint(analyzer)
-    key = om.maxKey(ordmap)
-    value = me.getValue(om.get(ordmap, key))
-    lstlandingpoints = controller.getLandingPointsByCountry(analyzer, value[1])
-    lstcoordinates = controller.getLandingPointsCoordinates(analyzer, lstlandingpoints)
-    pass
+    ordmap = controller.mostConnectedLandingPoint(analyzer)
+    key = om.minKey(ordmap)
+    vertex = me.getValue(om.get(ordmap, key))
+    city = vertex.split('-')[0]
+    country = vertex.split('-')[1]
+    vertexcoords = me.getValue(mp.get(analyzer['vertexscoords'], vertex))
+    lstvertexs = controller.getAdjacentVertexs(analyzer, vertex)
+    lstcoordinates = controller.getVertexsCoordinates(analyzer, lstvertexs)
+    map = folium.Map(vertexcoords)
+    folium.Marker(vertexcoords, str(city)).add_to(map)
+    for location in lt.iterator(lstcoordinates):
+        folium.Marker(location).add_to(map)
+        folium.PolyLine([vertexcoords, location], color="blue", weight=2.5, opacity=0.5).add_to(map)
+    map.save("map2.html")
 
 def plotMinimumCostPathMap(analyzer, vertexb):
     """
-    Crea un mapa de la ruta de costo mínimo entre dos
+    Crea un mapa html de la ruta de costo mínimo entre dos
     puntos de conexión
     """
     lstvertexs = controller.getMinimumCostPathVertexs(analyzer, vertexb)
     lstcoordinates = controller.getPathCoordinates(analyzer, lstvertexs)
-    pass
+    map = folium.Map()
+    for location in lt.iterator(lstcoordinates):
+        folium.Marker(location).add_to(map)
+        folium.PolyLine(lstcoordinates['elements'], color="blue", weight=2.5, opacity=0.25).add_to(map)
+    map.save("map3.html")
+
+def plotConnectedCountriesMap(analyzer, landingpoint, landingpointname):
+    """
+    Crea un mapa html de los países conectados a un punto 
+    de conexión
+    """
+    origincoords = controller.getLandingPointCoordinates(analyzer, landingpoint)
+    lstlandingpoints = controller.getConnectedLandingPoints(analyzer, landingpoint)
+    lstcoordinates = controller.getLandingPointsCoordinates(analyzer, lstlandingpoints)
+    map = folium.Map(origincoords)
+    folium.Marker(origincoords, str(landingpointname)).add_to(map)
+    for location in lt.iterator(lstcoordinates):
+        folium.Marker(location).add_to(map)
+        folium.PolyLine([origincoords, location], color="blue", weight=2.5, opacity=0.5).add_to(map)
+    map.save("map5.html")
 
 # Menú de opciones
 
@@ -270,11 +299,8 @@ while True:
 
     elif int(inputs[0]) == 4:
         print()
-        landingpoint = controller.mostConnectedLandingPoint(analyzer)[0]
-        cables = controller.mostConnectedLandingPoint(analyzer)[1]
-        printMostConnectedLandingPoint(analyzer, landingpoint, cables)
-        printMostConnectedCapitalLandingPoint(analyzer)
-        plotMostConnectedLandingPoint(analyzer)
+        printMostConnectedLandingPoint(analyzer)
+        plotMostConnectedLandingPointMap(analyzer)
 
     elif int(inputs[0]) == 5:
         print()
@@ -298,6 +324,7 @@ while True:
         landingpointname = str(input("Ingrese punto de conexión: "))
         landingpoint = controller.getLandingPoint(analyzer, landingpointname)
         printConnectedCountries(analyzer, landingpoint)
+        plotConnectedCountriesMap(analyzer, landingpoint, landingpointname)
 
     elif int(inputs[0]) == 8:
         print()
@@ -311,8 +338,8 @@ while True:
         ipaddressb = str(input("Ingrese dirección IP: "))
         coordinatesa = controller.getCoordinatesByIPAddress(ipaddressa)
         coordinatesb = controller.getCoordinatesByIPAddress(ipaddressb)
-        clstlandingpointa = controller.getClosestLandingPoint(analyzer, coordinatesa)
-        clstlandingpointb = controller.getClosestLandingPoint(analyzer, coordinatesb)
+        clstlandingpointa = controller.getClosestLandingPoint(analyzer, coordinatesa)[0]
+        clstlandingpointb = controller.getClosestLandingPoint(analyzer, coordinatesb)[0]
         vertexa = controller.getVertexByLandingPoint(analyzer, clstlandingpointa)
         vertexb = controller.getVertexByLandingPoint(analyzer, clstlandingpointb)
         controller.minimumJumpsPaths(analyzer, vertexa)
