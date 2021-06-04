@@ -18,12 +18,12 @@ Para la recolección de datos se promedió el tiempo de ejecución para cada req
 
 |  | Tiempo |
 | --- | --- |
-| __Carga de datos__ | [ms] |
-| __Requerimiento 1__ | [ms] |
-| __Requerimiento 2__ | [ms] |
-| __Requerimiento 3__ | [ms] |
-| __Requerimiento 4__ | [ms] |
-| __Requerimiento 5__ | [ms] |
+| __Carga de datos__ | 7231.251 [ms] |
+| __Requerimiento 1__ | 965.693 [ms] |
+| __Requerimiento 2__ | 217.302 [ms] |
+| __Requerimiento 3__ | 982.437 [ms] |
+| __Requerimiento 4__ | 1561.942 [ms] |
+| __Requerimiento 5__ | 173.321 [ms] |
 
 ## Memoria :file_folder:
 Para la recolección de datos se promedió la memoria asignada para cada requerimiento después de ser ejecutado 5 veces. La siguiente tabla muestra los resultados de las pruebas para el reto 4.
