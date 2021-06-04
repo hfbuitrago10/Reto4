@@ -134,6 +134,13 @@ def mostConnectedLandingPoint(analyzer):
     """
     return model.mostConnectedLandingPoint(analyzer)
 
+def mostConnectedCapitalLandingPoint(analyzer):
+    """
+    Retorna un árbol tipo 'RBT' con los puntos de conexión de
+    capitales por número de conexiones
+    """
+    return model.mostConnectedCapitalLandingPoint(analyzer)
+
 def minimumCostPaths(analyzer, vertexa):
     """
     Retorna los caminos de costo mínimo desde un punto de conexión
@@ -154,6 +161,13 @@ def minimumCostPath(analyzer, vertexb):
     inicial y un punto de conexión destino
     """
     return model.minimumCostPath(analyzer, vertexb)
+
+def getMinimumCostPathVertexs(analyzer, vertexb):
+    """
+    Retorna una lista con los vértices de la ruta de costo
+    mínimo entre dos puntos de conexión
+    """
+    return model.getMinimumCostPathVertexs(analyzer, vertexb)
 
 def minimumSpanningTrees(analyzer):
     """
@@ -224,3 +238,10 @@ def minimumJumpsPath(analyzer, vertexb):
     inicial y un punto de conexión destino
     """
     return model.minimumJumpsPath(analyzer, vertexb)
+
+def getPathCoordinates(analyzer, lstvertexs):
+    """
+    Retorna una lista con las coordenadas geográficas de cada
+    vértice de una ruta
+    """
+    return model.getPathCoordinates(analyzer, lstvertexs)
