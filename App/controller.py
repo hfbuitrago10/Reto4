@@ -99,6 +99,13 @@ def getLandingPoint(analyzer, landingpointname):
     """
     return model.getLandingPoint(analyzer, landingpointname)
 
+def getLandingPointName(analyzer, landingpoint):
+    """
+    Retorna el nombre de un punto de conexión
+    específico
+    """
+    return model.getLandingPointName(analyzer, landingpoint)
+
 def getVertexByLandingPoint(analyzer, landingpoint):
     """
     Retorna un vértice de un punto de conexión
