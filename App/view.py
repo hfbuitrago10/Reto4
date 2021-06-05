@@ -185,7 +185,7 @@ def printMinimumJumpsPath(analyzer, vertexb):
 
 def plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, namea, nameb):
     """
-    Crea un mapa html de los componentes fuertemente
+    Crea un mapa interactivo html de los componentes fuertemente
     conectados del grafo
     """
     vertexacoords = controller.getVertexCoordinates(analyzer, vertexa)
@@ -203,8 +203,8 @@ def plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, namea, nameb)
 
 def plotMostConnectedLandingPointMap(analyzer):
     """
-    Crea un mapa html del punto de conexión con mayor número
-    de cables conectados
+    Crea un mapa interactivo html de las conexiones del punto de
+    conexión con mayor número de cables conectados
     """
     ordmap = controller.mostConnectedLandingPoint(analyzer)
     key = om.minKey(ordmap)
@@ -223,7 +223,7 @@ def plotMostConnectedLandingPointMap(analyzer):
 
 def plotMinimumCostPathMap(analyzer, vertexb):
     """
-    Crea un mapa html de la ruta de costo mínimo entre dos
+    Crea un mapa interactivo html de la ruta de costo mínimo entre dos
     puntos de conexión
     """
     lstvertexs = controller.getMinimumCostPathVertexs(analyzer, vertexb)

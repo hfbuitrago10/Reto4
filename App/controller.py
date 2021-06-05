@@ -80,7 +80,7 @@ def loadConnections(analyzer):
 def loadCountries(analyzer):
     """
     Carga los puntos de conexión de las capitales de cada país. Por cada
-    país se indica al modelo que debe adicione los respectivos vértices
+    país se indica al modelo que adicione sus respectivos vértices
     y conexiones al analizador
     """
     countriesfile = cf.data_dir + 'countries.csv'
@@ -108,7 +108,7 @@ def getVertexByLandingPoint(analyzer, landingpoint):
 
 def getCapitalVertexByCountry(analyzer, country):
     """
-    Retorna un vértice del punto de conexión de la
+    Retorna el vértice del punto de conexión de la
     capital de un país específico
     """
     return model.getCapitalVertexByCountry(analyzer, country)
@@ -185,21 +185,21 @@ def mostConnectedLandingPoint(analyzer):
 
 def minimumCostPaths(analyzer, vertexa):
     """
-    Retorna los caminos de costo mínimo desde un punto de conexión
+    Retorna las rutas de costo mínimo desde un punto de conexión
     inicial a todos los demás puntos de conexión
     """
     return model.minimumCostPaths(analyzer, vertexa)
 
 def hasPathTo(analyzer, vertexb):
     """
-    Retorna si existe un camino entre el punto de conexión
+    Retorna si existe una ruta entre el punto de conexión
     inicial y un punto de conexión destino
     """
     return model.hasPathTo(analyzer, vertexb)
 
 def minimumCostPath(analyzer, vertexb):
     """
-    Retorna el camino de costo mínimo entre el punto de conexión
+    Retorna la ruta de costo mínimo entre el punto de conexión
     inicial y un punto de conexión destino
     """
     return model.minimumCostPath(analyzer, vertexb)

@@ -81,9 +81,9 @@ def newAnalyzer():
 
 def addLandingPointConnection(analyzer, connection):
     """
-    Adiciona los puntos de conexión como vértices del grafo, además
-    crea un arco entre cada vértice adyacente con su distancia
-    en kilometros como peso
+    Adiciona los puntos de conexión como vértices del grafo, adicionalmente
+    crea un arco entre cada vértice adyacente con su distancia en km
+    como peso del arco
     """
     origin = vertexOrigin(connection)
     destination = vertexDestination(connection)
@@ -134,8 +134,8 @@ def addCablesByLandingPoint(analyzer, connection, landingpoint):
 
 def addConnectedLandingPoints(analyzer, connection):
     """
-    Adiciona la lista de puntos de conexión conectados con un
-    punto de conexión específico
+    Adiciona un punto de conexión a la lista de puntos de conexión
+    conectados con un punto de conexión específico
     """
     map = analyzer['connectedlandingpoints']
     entry = mp.get(map, connection['origin'])
@@ -151,8 +151,8 @@ def addConnectedLandingPoints(analyzer, connection):
 
 def addLandingPointsByCable(analyzer, connection):
     """
-    Adiciona la lista de puntos de conexión conectados por
-    un cable específico
+    Adiciona un punto de conexión a la lista de puntos de conexión
+    conectados por un cable específico
     """
     map = analyzer['landingpointsbycable']
     entry = mp.get(map, connection['cable_id'])
@@ -168,8 +168,8 @@ def addLandingPointsByCable(analyzer, connection):
 
 def addBandwidthByCable(analyzer, connection):
     """
-    Adiciona la capacidad de transferencia en terabits
-    de cada cable
+    Adiciona la capacidad de transferencia en tbps de
+    cada cable
     """
     map = analyzer['bandwidthbycable']
     entry = mp.get(map, connection['cable_id'])
@@ -185,8 +185,8 @@ def addBandwidthByCable(analyzer, connection):
 
 def addLandingPointsCoords(analyzer, landingpoint):
     """
-    Adiciona las coordenadas geográficas de un punto de
-    conexión específico
+    Adiciona las coordenadas geográficas y el nombre de un punto
+    de conexión específico
     """
     map = analyzer['landingpointscoords']
     key = landingpoint['landing_point_id']
@@ -226,7 +226,7 @@ def addLocalConnections(analyzer):
 def addCountries(analyzer, country):
     """
     Adiciona la capital, la poblacion y el número de
-    usuarios de cada país
+    usuarios de internet de cada país
     """
     map = analyzer['countries']
     key = str(country['CountryName'])
@@ -248,8 +248,8 @@ def addLandingPointsByCountry(analyzer, country):
 def addCapitalLandingPoints(analyzer, country):
     """
     Adiciona el punto de conexión de la capital de un país como vértice del
-    grafo, adicionalmente crea un arco entre el vértice capital y
-    los puntos de conexión de su país
+    grafo, adicionalmente crea un arco entre el vértice capital y los
+    puntos de conexión de dicho país
     """
     countries = analyzer['landingpointsbycountry']
     coords = analyzer['landingpointscoords']
@@ -282,7 +282,7 @@ def addCapitalLandingPoints(analyzer, country):
 def addVertexsCoords(analyzer, vertex):
     """
     Adiciona las coordenadas geográficas de un
-    vértice del gráfo
+    vértice específico
     """
     map = analyzer['vertexscoords']
     coords = analyzer['landingpointscoords']
@@ -294,7 +294,7 @@ def addVertexsCoords(analyzer, vertex):
 def addCapitalVertexsCoords(analyzer, vertex, coordinates):
     """
     Adiciona las coordenadas geográficas de un
-    vértice capital del grafo
+    vértice capital específico
     """
     map = analyzer['vertexscoords']
     mp.put(map, vertex, coordinates)
@@ -321,7 +321,7 @@ def vertexDestination(connection):
 
 def haversineDistance(analyzer, connection):
     """
-    Calcula la distancia en kilometros entre dos puntos
+    Calcula la distancia en km entre dos puntos
     de conexión
     """
     map = analyzer['landingpointscoords']
@@ -389,7 +389,7 @@ def getCapitalVertexByCountry(analyzer, country):
 
 def getHarvesineDistance(analyzer, origin, destination):
     """
-    Retorna la distancia en kilometros entre dos puntos
+    Retorna la distancia en km entre dos puntos
     de conexión
     """
     map = analyzer['landingpointscoords']
@@ -595,7 +595,7 @@ def depthFirstSearch(analyzer):
 
 def getConnectedCountries(analyzer, landingpoint):
     """
-    Retorna un árbol tipo 'RBT' de países conectados a un
+    Retorna un árbol tipo 'RBT' con los países conectados a un
     punto de conexión específico
     """
     map = analyzer['connectedlandingpoints']
@@ -634,8 +634,8 @@ def getCountriesByCable(analyzer, cable):
 
 def maximumBandwidthByCountry(analyzer, cable):
     """
-    Retorna el máximo ancho de banda de los países conectados
-    por un cable específico en mbps
+    Retorna el máximo ancho de banda en mbps de los países
+    conectados por un cable específico
     """
     bandwidthbycountry = mp.newMap()
     map = analyzer['bandwidthbycable']
