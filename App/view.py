@@ -23,6 +23,7 @@
 import config as cf
 import sys
 import folium
+import haversine as hs
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -190,15 +191,15 @@ def plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, namea, nameb)
     """
     vertexacoords = controller.getVertexCoordinates(analyzer, vertexa)
     vertexbcoords = controller.getVertexCoordinates(analyzer, vertexb)
-    lstcomponenta = controller.getStronglyConnectedComponent(analyzer, 1)
-    lstcomponentb = controller.getStronglyConnectedComponent(analyzer, 2)
-    lstcoordinatesa = controller.getVertexsCoordinates(analyzer, lstcomponenta)
-    lstcoordinatesb = controller.getVertexsCoordinates(analyzer, lstcomponentb)
-    map = folium.Map()
-    folium.PolyLine(lstcoordinatesa['elements'], color="green", weight=2.5, opacity=0.35).add_to(map)
-    folium.PolyLine(lstcoordinatesb['elements'], color="blue", weight=2.5, opacity=0.35).add_to(map)
-    folium.Marker(vertexacoords, str(namea)).add_to(map)
-    folium.Marker(vertexbcoords, str(nameb)).add_to(map)
+    lstsccomponentsa = controller.getStronglyConnectedComponent(analyzer, 1)
+    lstsccomponentsb = controller.getStronglyConnectedComponent(analyzer, 2)
+    lstcoordsa = controller.getVertexsCoordinates(analyzer, lstsccomponentsa)
+    lstcoordsb = controller.getVertexsCoordinates(analyzer, lstsccomponentsb)
+    map = folium.Map(zoom_start=2.5)
+    folium.PolyLine(lstcoordsa['elements'], color="black", weight=2.5, opacity=0.35).add_to(map)
+    folium.PolyLine(lstcoordsb['elements'], color="grey", weight=2.5, opacity=0.35).add_to(map)
+    folium.Marker(vertexacoords, str(namea), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.Marker(vertexbcoords, str(nameb), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
     map.save("map1.html")
 
 def plotMostConnectedLandingPointMap(analyzer):
@@ -211,30 +212,42 @@ def plotMostConnectedLandingPointMap(analyzer):
     vertex = me.getValue(om.get(ordmap, key))
     city = vertex.split('-')[0]
     country = vertex.split('-')[1]
+    landingpoint = city + ', ' + country
     vertexcoords = me.getValue(mp.get(analyzer['vertexscoords'], vertex))
     lstvertexs = controller.getAdjacentVertexs(analyzer, vertex)
     lstcoordinates = controller.getVertexsCoordinates(analyzer, lstvertexs)
-    map = folium.Map(vertexcoords)
-    folium.Marker(vertexcoords, str(city)).add_to(map)
+    map = folium.Map(vertexcoords, zoom_start=2.5)
+    folium.Marker(vertexcoords, str(landingpoint), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
     for location in lt.iterator(lstcoordinates):
         folium.Marker(location).add_to(map)
-        folium.PolyLine([vertexcoords, location], color="blue", weight=2.5, opacity=0.35).add_to(map)
+        distance = str(hs.haversine(vertexcoords, location)) + " km"
+        folium.PolyLine([vertexcoords, location], color="grey", weight=3.5, opacity=0.35, tooltip=distance).add_to(map)
     map.save("map2.html")
 
-def plotMinimumCostPathMap(analyzer, vertexb):
+def plotMinimumCostPathMap(analyzer, vertexa, vertexb):
     """
     Crea un mapa interactivo html de la ruta de costo mínimo entre dos
     puntos de conexión
     """
     lstvertexs = controller.getMinimumCostPathVertexs(analyzer, vertexb)
     lstcoordinates = controller.getPathCoordinates(analyzer, lstvertexs)
-    map = folium.Map()
+    origincoords = lt.firstElement(lstcoordinates)
+    destcoords = lt.lastElement(lstcoordinates)
+    originpos = lt.isPresent(lstcoordinates, origincoords)
+    destpos = lt.isPresent(lstcoordinates, destcoords)
+    lt.removeFirst(lstcoordinates)
+    lt.removeLast(lstcoordinates)
+    map = folium.Map(origincoords, zoom_start=2.5)
     for location in lt.iterator(lstcoordinates):
         folium.Marker(location).add_to(map)
-        folium.PolyLine(lstcoordinates['elements'], color="blue", weight=2.5, opacity=0.35).add_to(map)
+    lt.insertElement(lstcoordinates, origincoords, originpos)
+    lt.insertElement(lstcoordinates, destcoords, destpos)
+    folium.Marker(origincoords, str(vertexa.replace('-', ', ')), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.Marker(destcoords, str(vertexb.replace('-', ', ')), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.PolyLine(lstcoordinates['elements'], color="grey", weight=2.5, opacity=0.75).add_to(map)
     map.save("map3.html")
 
-def plotConnectedCountriesMap(analyzer, landingpoint, landingpointname):
+def plotConnectedCountriesMap(analyzer, landingpoint):
     """
     Crea un mapa html de los países conectados a un punto 
     de conexión
@@ -242,11 +255,13 @@ def plotConnectedCountriesMap(analyzer, landingpoint, landingpointname):
     origincoords = controller.getLandingPointCoordinates(analyzer, landingpoint)
     lstlandingpoints = controller.getConnectedLandingPoints(analyzer, landingpoint)
     lstcoordinates = controller.getLandingPointsCoordinates(analyzer, lstlandingpoints)
-    map = folium.Map(origincoords)
-    folium.Marker(origincoords, str(landingpointname)).add_to(map)
+    landingpointname = controller.getLandingPointName(analyzer, landingpoint)
+    map = folium.Map(origincoords, zoom_start=2.5)
+    folium.Marker(origincoords, str(landingpointname), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
     for location in lt.iterator(lstcoordinates):
         folium.Marker(location).add_to(map)
-        folium.PolyLine([origincoords, location], color="blue", weight=2.5, opacity=0.35).add_to(map)
+        distance = str(hs.haversine(origincoords, location)) + " km"
+        folium.PolyLine([origincoords, location], color="grey", weight=3.5, opacity=0.5, tooltip=distance).add_to(map)
     map.save("map5.html")
 
 # Menú de opciones
@@ -329,7 +344,7 @@ while True:
         vertexb = controller.getCapitalVertexByCountry(analyzer, countryb)
         controller.minimumCostPaths(analyzer, vertexa)
         printMinimumCostPath(analyzer, vertexb)
-        plotMinimumCostPathMap(analyzer, vertexb)
+        plotMinimumCostPathMap(analyzer, vertexa, vertexb)
 
     elif int(inputs[0]) == 6:
         controller.minimumSpanningTrees(analyzer)
@@ -343,7 +358,7 @@ while True:
         landingpointname = str(input("Ingrese punto de conexión: "))
         landingpoint = controller.getLandingPoint(analyzer, landingpointname)
         printConnectedCountries(analyzer, landingpoint)
-        plotConnectedCountriesMap(analyzer, landingpoint, landingpointname)
+        plotConnectedCountriesMap(analyzer, landingpoint)
 
     elif int(inputs[0]) == 8:
         print()
