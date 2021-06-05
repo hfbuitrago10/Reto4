@@ -345,6 +345,15 @@ def getLandingPoint(analyzer, landingpointname):
     landingpoint = me.getValue(mp.get(map, landingpointname))
     return landingpoint
 
+def getLandingPointName(analyzer, landingpoint):
+    """
+    Retorna el nombre de un punto de conexión
+    específico
+    """
+    map = analyzer['landingpointscoords']
+    landingpointname = me.getValue(mp.get(map, landingpoint))[2]
+    return landingpointname
+
 def getVertexByLandingPoint(analyzer, landingpoint):
     """
     Retorna un vértice de un punto de conexión
