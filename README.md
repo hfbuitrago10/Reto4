@@ -22,6 +22,7 @@ Los datos pueden ser descargados [aquí.](https://github.com/telegeography/www.s
 ## Repositorio :file_folder:
 La estructura del repositorio es la siguiente:
 * [App:](https://github.com/hfbuitrago10/Reto4/tree/master/App) este directorio contiene los archivos de código desarrollados para el proyecto.
+* [DISCLib:](https://github.com/hfbuitrago10/Reto4/tree/master/DISClib) este directorio contiene la librería con el código fuente del proyecto.
 * [Data:](https://github.com/hfbuitrago10/Reto4/tree/master/Data) este directorio contiene los datos del proyecto.
 * [Docs:](https://github.com/hfbuitrago10/Reto4/tree/master/Docs) este directorio contiene los documentos de análisis del proyecto.
-* [DISCLib:](https://github.com/hfbuitrago10/Reto4/tree/master/DISClib) este directorio contiene la librería con el código fuente del proyecto.
+* [Maps:](https://github.com/hfbuitrago10/Reto4/tree/master/Maps) este directorio contiene los archivos de código de los mapas desarrollados.
