@@ -30,12 +30,12 @@ Para la recolección de datos se promedió la memoria asignada para cada requeri
 
 |  | Memoria |
 | --- | --- |
-| __Carga de datos__ | [kB] |
-| __Requerimiento 1__ | [kB] |
-| __Requerimiento 2__ | [kB] |
-| __Requerimiento 3__ | [kB] |
-| __Requerimiento 4__ | [kB] |
-| __Requerimiento 5__ | [kB] |
+| __Carga de datos__ | 12798.045 [kB] |
+| __Requerimiento 1__ | 765.181 [kB] |
+| __Requerimiento 2__ | 35.532 [kB] |
+| __Requerimiento 3__ | 895.437 [kB] |
+| __Requerimiento 4__ | 979.815 [kB] |
+| __Requerimiento 5__ | 127.631 [kB] |
 
 ## Complejidad :chart_with_upwards_trend:
 Se realizó un análisis de complejidad en el peor caso para cada requerimiento. La siguiente tabla muestra la complejidad temporal de cada requerimiento para el reto 4.
