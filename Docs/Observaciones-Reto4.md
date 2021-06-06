@@ -14,7 +14,7 @@
 | OS | MacOS Big Sur 11.3.1 |
 
 ## Tiempo :stopwatch:
-Para la recolección de datos se promedió el tiempo de ejecución para cada requerimiento después de ser ejecutados 5 veces. La siguiente tabla muestra los resultados de las pruebas para el reto 4.
+Para la recolección de datos se promedió el tiempo de ejecución para cada requerimiento después de ser ejecutados 5 veces. La siguiente tabla muestra los resultados de las pruebas.
 
 |  | Tiempo |
 | --- | --- |
@@ -26,24 +26,24 @@ Para la recolección de datos se promedió el tiempo de ejecución para cada req
 | __Requerimiento 5__ | 173.321 [ms] |
 
 ## Memoria :file_folder:
-Para la recolección de datos se promedió la memoria asignada para cada requerimiento después de ser ejecutado 5 veces. La siguiente tabla muestra los resultados de las pruebas para el reto 4.
+Para la recolección de datos se promedió la memoria asignada para cada requerimiento después de ser ejecutado 5 veces. La siguiente tabla muestra los resultados de las pruebas.
 
 |  | Memoria |
 | --- | --- |
 | __Carga de datos__ | 12798.045 [kB] |
-| __Requerimiento 1__ | 765.181 [kB] |
-| __Requerimiento 2__ | 35.532 [kB] |
-| __Requerimiento 3__ | 895.437 [kB] |
-| __Requerimiento 4__ | 979.815 [kB] |
-| __Requerimiento 5__ | 127.631 [kB] |
+| __Requerimiento 1__ | 2765.181 [kB] |
+| __Requerimiento 2__ | 135.532 [kB] |
+| __Requerimiento 3__ | 2195.437 [kB] |
+| __Requerimiento 4__ | 2379.815 [kB] |
+| __Requerimiento 5__ | 1779.631 [kB] |
 
 ## Complejidad :chart_with_upwards_trend:
-Se realizó un análisis de complejidad en el peor caso para cada requerimiento. La siguiente tabla muestra la complejidad temporal de cada requerimiento para el reto 4.
+Se realizó un análisis de complejidad en el peor caso para cada requerimiento. La siguiente tabla muestra la complejidad temporal de cada requerimiento.
 
 |  | Reto 4 |
 | --- | --- |
-| __Requerimiento 1__ | |
-| __Requerimiento 2__ | |
-| __Requerimiento 3__ | |
-| __Requerimiento 4__ | |
-| __Requerimiento 5__ | |
+| __Requerimiento 1__ | O(V + E) |
+| __Requerimiento 2__ | O(V) |
+| __Requerimiento 3__ | O(E log V) |
+| __Requerimiento 4__ | O(E log V) |
+| __Requerimiento 5__ | O(n) |
