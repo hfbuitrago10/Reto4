@@ -3,6 +3,6 @@ El conjunto de datos ```SubmarineCableMap``` presenta información de conectivid
 
 * ```connections.csv:``` este archivo contiene un conjunto de datos que corresponde a la información de conectividad de los cables submarinos.
 * ```landing_points.csv:``` este archivo contiene un conjunto de datos que corresponde a la información de los puntos de conexión de los cables submarinos.
-* ```countries.csv:``` este archivo contiene un conjunto de datos que corresponde a la información de los países.
+* ```countries.csv:``` este archivo contiene un conjunto de datos que corresponde a la información de los países conectados.
 
 Los datos pueden ser descargados [aquí.](https://github.com/telegeography/www.submarinecablemap.com)
