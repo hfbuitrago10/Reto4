@@ -35,7 +35,7 @@ Para la recolección de datos se promedió la memoria asignada para cada requeri
 | __Requerimiento 2__ | 135.532 [kB] |
 | __Requerimiento 3__ | 2195.437 [kB] |
 | __Requerimiento 4__ | 2379.815 [kB] |
-| __Requerimiento 5__ | 1779.631 [kB] |
+| __Requerimiento 5__ | 179.631 [kB] |
 
 ## Complejidad :chart_with_upwards_trend:
 Se realizó un análisis de complejidad en el peor caso para cada requerimiento. La siguiente tabla muestra la complejidad temporal de cada requerimiento.
