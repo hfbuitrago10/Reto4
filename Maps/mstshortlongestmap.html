@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_6dac6d3a06cf4fde85619300b3832b0e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>    
+    
+            <div class="folium-map" id="map_6dac6d3a06cf4fde85619300b3832b0e" ></div>
+        
+</body>
+<script>    
+    
+            var map_6dac6d3a06cf4fde85619300b3832b0e = L.map(
+                "map_6dac6d3a06cf4fde85619300b3832b0e",
+                {
+                    center: [21.548769, -158.242038],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 1.5,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_f30bce01b2c44f48b0f406221d85776f = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            var marker_f024bca2f7e74bf9ac62ac330b97e012 = L.marker(
+                [38.883333, -77.0],
+                {}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            var icon_f7615d31719a4eee8129b0201f07f51b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "flag", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_f024bca2f7e74bf9ac62ac330b97e012.setIcon(icon_f7615d31719a4eee8129b0201f07f51b);
+        
+    
+        var popup_e9540a2ee10c4df1a69f941ec9ce8a78 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_9f98ad6fb5e643ed9f339b5a73a51c97 = $(`<div id="html_9f98ad6fb5e643ed9f339b5a73a51c97" style="width: 100.0%; height: 100.0%;">Washington, D.C.-United States</div>`)[0];
+            popup_e9540a2ee10c4df1a69f941ec9ce8a78.setContent(html_9f98ad6fb5e643ed9f339b5a73a51c97);
+        
+
+        marker_f024bca2f7e74bf9ac62ac330b97e012.bindPopup(popup_e9540a2ee10c4df1a69f941ec9ce8a78)
+        ;
+
+        
+    
+    
+            var marker_2469e422ce704f1f81ee60701fd82156 = L.marker(
+                [21.548769, -158.242038],
+                {}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            var icon_2b7130e82a7040e8821dd707f8f78fe3 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "flag", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_2469e422ce704f1f81ee60701fd82156.setIcon(icon_2b7130e82a7040e8821dd707f8f78fe3);
+        
+    
+        var popup_301666603c1d4467915a24e4bd58e074 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b86aa0cb838f413e89d2ccd53a19d027 = $(`<div id="html_b86aa0cb838f413e89d2ccd53a19d027" style="width: 100.0%; height: 100.0%;">5754-asia-america-gateway-aag-cable-system</div>`)[0];
+            popup_301666603c1d4467915a24e4bd58e074.setContent(html_b86aa0cb838f413e89d2ccd53a19d027);
+        
+
+        marker_2469e422ce704f1f81ee60701fd82156.bindPopup(popup_301666603c1d4467915a24e4bd58e074)
+        ;
+
+        
+    
+    
+            var poly_line_38851ba9f8bc43618c565b04f9bfcb72 = L.polyline(
+                [[38.883333, -77.0], [21.548769, -158.242038]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "grey", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.75, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            poly_line_38851ba9f8bc43618c565b04f9bfcb72.bindTooltip(
+                `<div>
+                     7791.9071009021045 km
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_c2667f6ceae94df79fc2ae1f0d357ae8 = L.marker(
+                [-19.016701, -169.916704],
+                {}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            var icon_0bb24d85388349c2b86992f6aba26b64 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "flag", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_c2667f6ceae94df79fc2ae1f0d357ae8.setIcon(icon_0bb24d85388349c2b86992f6aba26b64);
+        
+    
+        var popup_b27f0949a73a428ca00dc4c0ba7b9874 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_5dc4e7b6e04d4ed3a538b0ca4489cd4a = $(`<div id="html_5dc4e7b6e04d4ed3a538b0ca4489cd4a" style="width: 100.0%; height: 100.0%;">9089-manatua</div>`)[0];
+            popup_b27f0949a73a428ca00dc4c0ba7b9874.setContent(html_5dc4e7b6e04d4ed3a538b0ca4489cd4a);
+        
+
+        marker_c2667f6ceae94df79fc2ae1f0d357ae8.bindPopup(popup_b27f0949a73a428ca00dc4c0ba7b9874)
+        ;
+
+        
+    
+    
+            var marker_8b61cfd7637d4bbf965bf917c6a8724e = L.marker(
+                [-19.016666666666666, -169.916667],
+                {}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            var icon_3832db777f7a4afca6dc64d3c0e5cfc0 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "flag", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_8b61cfd7637d4bbf965bf917c6a8724e.setIcon(icon_3832db777f7a4afca6dc64d3c0e5cfc0);
+        
+    
+        var popup_9e73a462f00d45359ad1a88d78e35215 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_7a7f2398c92c4de0b59e99f0fc4ea102 = $(`<div id="html_7a7f2398c92c4de0b59e99f0fc4ea102" style="width: 100.0%; height: 100.0%;">Alofi-Niue</div>`)[0];
+            popup_9e73a462f00d45359ad1a88d78e35215.setContent(html_7a7f2398c92c4de0b59e99f0fc4ea102);
+        
+
+        marker_8b61cfd7637d4bbf965bf917c6a8724e.bindPopup(popup_9e73a462f00d45359ad1a88d78e35215)
+        ;
+
+        
+    
+    
+            var poly_line_63adceb5f93c4fb0b45835781b012a0f = L.polyline(
+                [[-19.016701, -169.916704], [-19.016666666666666, -169.916667]],
+                {"bubblingMouseEvents": true, "color": "grey", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "grey", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.75, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+            ).addTo(map_6dac6d3a06cf4fde85619300b3832b0e);
+        
+    
+            poly_line_63adceb5f93c4fb0b45835781b012a0f.bindTooltip(
+                `<div>
+                     0.005450176266361434 km
+                 </div>`,
+                {"sticky": true}
+            );
+        
+</script>
