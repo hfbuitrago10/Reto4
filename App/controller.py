@@ -165,7 +165,7 @@ def getVertexsCoordinates(analyzer, lstadjacents):
 def stronglyConnectedComponents(analyzer):
     """
     Retorna el número de componentes fuertemente conectados
-    del grafo de conexiones
+    del grafo
     """
     return model.stronglyConnectedComponents(analyzer)
 
@@ -220,7 +220,7 @@ def getMinimumCostPathVertexs(analyzer, vertexb):
 
 def minimumSpanningTrees(analyzer):
     """
-    Retorna los árboles de expansión mínimos
+    Retorna el árbol de expansión mínima
     del grafo
     """
     return model.minimumSpanningTrees(analyzer)
@@ -228,9 +228,23 @@ def minimumSpanningTrees(analyzer):
 def minimumSpanningTree(analyzer):
     """
     Retorna el número de vértices y el costo del árbol
-    de expansión mínimo
+    de expansión mínima
     """
     return model.minimumSpanningTree(analyzer)
+
+def getLongestConnection(analyzer):
+    """
+    Retorna la conexión con mayor distancia en km del
+    árbol de expansión mínima
+    """
+    return model.getLongestConnection(analyzer)
+
+def getShortestConnection(analyzer):
+    """
+    Retorna la conexión con menor distancia en km del
+    árbol de expansión mínima
+    """
+    return model.getShortestConnection(analyzer)
 
 def getConnectedCountries(analyzer, landingpoint):
     """
