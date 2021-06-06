@@ -121,6 +121,26 @@ def printMinimumCostPath(analyzer, vertexb):
     else:
         print("No existe ruta entre los puntos de conexión\n")
 
+def printLongestConnection(analyzer):
+    """
+    Imprime la conexión con mayor distancia en km del
+    árbol de expansión mínima
+    """
+    longestconnection = controller.getLongestConnection(analyzer)
+    print("---------- Conexión más larga ----------")
+    print("Origen: " + str(longestconnection['vertexA']) + "  Destino: " + str(longestconnection['vertexB']))
+    print("Distancia: " + str(longestconnection['weight']) + " km\n")
+
+def printShortestConnection(analyzer):
+    """
+    Imprime la conexión con menor distancia en km del
+    árbol de expansión mínima
+    """
+    shortestconnection = controller.getShortestConnection(analyzer)
+    print("---------- Conexión más corta ----------")
+    print("Origen: " + str(shortestconnection['vertexA']) + "  Destino: " + str(shortestconnection['vertexB']))
+    print("Distancia: " + str(shortestconnection['weight']) + " km\n")
+
 def printConnectedCountries(analyzer, landingpoint):
     """
     Imprime los países conectados a un punto de conexión específico
@@ -186,7 +206,7 @@ def printMinimumJumpsPath(analyzer, vertexb):
 
 def plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, namea, nameb):
     """
-    Crea un mapa interactivo html de los componentes fuertemente
+    Crea un mapa interactivo de los componentes fuertemente
     conectados del grafo
     """
     vertexacoords = controller.getVertexCoordinates(analyzer, vertexa)
@@ -204,8 +224,8 @@ def plotStronglyConnectedComponentsMap(analyzer, vertexa, vertexb, namea, nameb)
 
 def plotMostConnectedLandingPointMap(analyzer):
     """
-    Crea un mapa interactivo html de las conexiones del punto de
-    conexión con mayor número de cables conectados
+    Crea un mapa interactivo de las conexiones del punto de conexión
+    con mayor número de cables conectados
     """
     ordmap = controller.mostConnectedLandingPoint(analyzer)
     key = om.minKey(ordmap)
@@ -226,7 +246,7 @@ def plotMostConnectedLandingPointMap(analyzer):
 
 def plotMinimumCostPathMap(analyzer, vertexa, vertexb):
     """
-    Crea un mapa interactivo html de la ruta de costo mínimo entre dos
+    Crea un mapa interactivo de la ruta de costo mínimo entre dos
     puntos de conexión
     """
     lstvertexs = controller.getMinimumCostPathVertexs(analyzer, vertexb)
@@ -247,9 +267,35 @@ def plotMinimumCostPathMap(analyzer, vertexa, vertexb):
     folium.PolyLine(lstcoordinates['elements'], color="grey", weight=2.5, opacity=0.75).add_to(map)
     map.save("map3.html")
 
+def plotMinimumSpanningTreeConnections(analyzer):
+    """
+    Crea un mapa interactivo de la conexión más larga y más corta
+    del árbol de expansión mínima
+    """
+    longestconnection = controller.getLongestConnection(analyzer)
+    shortestconnection = controller.getShortestConnection(analyzer)
+    originlongest = longestconnection['vertexA']
+    originlongestcoords = controller.getVertexCoordinates(analyzer, originlongest)
+    destlongest = longestconnection['vertexB']
+    destlongestcoords = controller.getVertexCoordinates(analyzer, destlongest)
+    longestdistance = str(longestconnection['weight']) + " km"
+    originshortest = shortestconnection['vertexA']
+    originshortestcoords = controller.getVertexCoordinates(analyzer, originshortest)
+    destshortest = shortestconnection['vertexB']
+    destshortestcoords = controller.getVertexCoordinates(analyzer, destshortest)
+    shortestdistance = str(shortestconnection['weight']) + " km"
+    map = folium.Map(destlongestcoords, zoom_start=1.5)
+    folium.Marker(originlongestcoords, str(originlongest), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.Marker(destlongestcoords, str(destlongest), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.PolyLine([originlongestcoords, destlongestcoords], color="grey", weight=2.5, opacity=0.75, tooltip=longestdistance).add_to(map)
+    folium.Marker(originshortestcoords, str(originshortest), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.Marker(destshortestcoords, str(destshortest), icon=folium.Icon(icon = 'flag', color = 'red')).add_to(map)
+    folium.PolyLine([originshortestcoords, destshortestcoords], color="grey", weight=2.5, opacity=0.75, tooltip=shortestdistance).add_to(map)
+    map.save("map4.html")
+
 def plotConnectedCountriesMap(analyzer, landingpoint):
     """
-    Crea un mapa html de los países conectados a un punto 
+    Crea un mapa interactivo de los países conectados a un punto 
     de conexión
     """
     origincoords = controller.getLandingPointCoordinates(analyzer, landingpoint)
@@ -352,6 +398,9 @@ while True:
         print("\n---------- Red de expansión mínima ----------")
         print("Total nodos conectados: " + str(minspanningtree[0]))
         print("Costo total: " + str(minspanningtree[1]) + " km\n")
+        printLongestConnection(analyzer)
+        printShortestConnection(analyzer)
+        plotMinimumSpanningTreeConnections(analyzer)
 
     elif int(inputs[0]) == 7:
         print()
