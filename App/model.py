@@ -65,15 +65,15 @@ def newAnalyzer():
                                            False,
                                            100000)
     
-    analyzer['cablesbylandingpoint'] = mp.newMap()
-    analyzer['connectedlandingpoints'] = mp.newMap()
-    analyzer['landingpointsbycable'] = mp.newMap()
-    analyzer['bandwidthbycable'] = mp.newMap()
-    analyzer['landingpointscoords'] = mp.newMap()
-    analyzer['landingpointsnames'] = mp.newMap()
-    analyzer['countries'] = mp.newMap()
-    analyzer['landingpointsbycountry'] = mp.newMap()
-    analyzer['vertexscoords'] = mp.newMap()
+    analyzer['cablesbylandingpoint'] = mp.newMap(maptype='PROBING')
+    analyzer['connectedlandingpoints'] = mp.newMap(maptype='PROBING')
+    analyzer['landingpointsbycable'] = mp.newMap(maptype='PROBING')
+    analyzer['bandwidthbycable'] = mp.newMap(maptype='PROBING')
+    analyzer['landingpointscoords'] = mp.newMap(maptype='PROBING')
+    analyzer['landingpointsnames'] = mp.newMap(maptype='PROBING')
+    analyzer['countries'] = mp.newMap(maptype='PROBING')
+    analyzer['landingpointsbycountry'] = mp.newMap(maptype='PROBING')
+    analyzer['vertexscoords'] = mp.newMap(maptype='PROBING')
 
     return analyzer
 
@@ -572,7 +572,7 @@ def getMinimumCostPathVertexs(analyzer, vertexb):
 
 def minimumSpanningTrees(analyzer):
     """
-    Retorna los árboles de expansión mínimos
+    Retorna el árbol de expansión mínima
     del grafo
     """
     graph = analyzer['connections']
@@ -582,7 +582,7 @@ def minimumSpanningTrees(analyzer):
 def minimumSpanningTree(analyzer):
     """
     Retorna el número de vértices y el costo del árbol
-    de expansión mínimo
+    de expansión mínima
     """
     map = analyzer['minimumspanningtrees']['distTo']
     lstvertexs = mp.keySet(map)
@@ -595,12 +595,37 @@ def minimumSpanningTree(analyzer):
             vertexsize += 1
     return vertexsize, distance
 
-def depthFirstSearch(analyzer):
+def getLongestConnection(analyzer):
     """
-    Retorna un recorrido dfs sobre
-    el grafo
+    Retorna la conexión con mayor distancia en km del
+    árbol de expansión mínima
     """
-    pass
+    lstconnections = analyzer['minimumspanningtrees']['edgeTo']['table']
+    longestconnection = None
+    maxdistance = 0
+    for connection in lt.iterator(lstconnections):
+        if connection['key'] is not None:
+            distance = connection['value']['weight']
+            if distance > maxdistance:
+                longestconnection = connection['value']
+                maxdistance = distance
+    return longestconnection
+
+def getShortestConnection(analyzer):
+    """
+    Retorna la conexión con menor distancia en km del
+    árbol de expansión mínima
+    """
+    lstconnections = analyzer['minimumspanningtrees']['edgeTo']['table']
+    shortestconnection = None
+    mindistance = 1000000
+    for connection in lt.iterator(lstconnections):
+        if connection['key'] is not None:
+            distance = connection['value']['weight']
+            if mindistance > distance:
+                shortestconnection = connection['value']
+                mindistance = distance
+    return shortestconnection
 
 def getConnectedCountries(analyzer, landingpoint):
     """
@@ -630,7 +655,7 @@ def getCountriesByCable(analyzer, cable):
     Retorna la lista de países conectados a un cable
     específico
     """
-    countriesbycable = mp.newMap()
+    countriesbycable = mp.newMap(maptype='PROBING')
     map = analyzer['landingpointsbycable']
     lstlandingpoints = me.getValue(mp.get(map, cable))
     lstcountries = lt.newList('ARRAY_LIST')
@@ -646,7 +671,7 @@ def maximumBandwidthByCountry(analyzer, cable):
     Retorna el máximo ancho de banda en mbps de los países
     conectados por un cable específico
     """
-    bandwidthbycountry = mp.newMap()
+    bandwidthbycountry = mp.newMap(maptype='PROBING')
     map = analyzer['bandwidthbycable']
     lstcountries = getCountriesByCable(analyzer, cable)
     for country in lt.iterator(lstcountries):
